@@ -48,7 +48,7 @@ function DailyTaskLog({ onTaskUpdate }) {
   const [taskLogData, setTaskLogData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(null);
   const intervalRef = useRef(null);
 
   const todayDateString = new Date().toISOString().split('T')[0];
@@ -61,6 +61,10 @@ function DailyTaskLog({ onTaskUpdate }) {
       if (response.data.success) {
         const groupedData = groupTasksByDate(response.data.data);
         setTaskLogData(groupedData);
+
+        // Set currentIndex to today’s date
+        const todayIndex = groupedData.findIndex(d => d.date === todayDateString);
+        setCurrentIndex(todayIndex !== -1 ? todayIndex : groupedData.length - 1);
       } else {
         throw new Error(response.data.message || 'Failed to fetch tasks');
       }
@@ -135,14 +139,14 @@ function DailyTaskLog({ onTaskUpdate }) {
     }
   };
 
-  if (loading) return <div className="p-5 text-center text-gray-700">Loading tasks…</div>;
+  if (loading || currentIndex === null) return <div className="p-5 text-center text-gray-700">Loading tasks…</div>;
   if (error) return <div className="p-5 text-center text-red-600">Error: {error}</div>;
   if (!taskLogData.length) return <div className="text-center p-5">No tasks available</div>;
 
   const currentDay = taskLogData[currentIndex];
 
   return (
-    <div className="w-full max-w-[700px] px-4 sm:px-6 mx-auto my-8 p-6 bg-white rounded-lg shadow">
+    <div className="w-full max-w-[700px] px-4 sm:px-6 mx-auto my-8 p-6 bg-white rounded-lg shadow overflow-y-auto h-[30rem]">
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
