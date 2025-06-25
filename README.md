@@ -22,6 +22,8 @@ A full-stack healthcare management web application designed to bridge the gap be
 ### Community Support Panel
 ![Screenshot 13](./screenshots/Screenshot%20%2813%29.png)
 
+### AI Chatbot
+![Screenshot 14](./screenshots/Screenshot%20%2814%29.png)
 
 ## ⚙️ Features
 
