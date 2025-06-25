@@ -84,65 +84,89 @@ const CommunitySupport = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-center mb-6">Community Support</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-start sm:items-center mb-8 gap-4">
-        <input
-          type="text"
-          value={question}
-          onChange={e => setQuestion(e.target.value)}
-          placeholder="Type your question here..."
-          className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <button type="submit" className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-          Post
-        </button>
-      </form>
+    <div className="min-h-screen bg-custom-gradient py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl font-bold text-white mb-8 text-center">Community Support</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-start sm:items-center mb-10 gap-4 bg-white/50 backdrop-blur-md rounded-lg p-6 shadow-lg">
+          <input
+            type="text"
+            value={question}
+            onChange={e => setQuestion(e.target.value)}
+            placeholder="Type your question here..."
+            className="flex-1 p-3 border-none rounded-md text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all duration-200 bg-white/50"
+          />
+          <button
+            type="submit"
+            className="px-6 py-3 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white focus:ring-2 focus:ring-neon-green focus:ring-offset-2 transition-all duration-300"
+          >
+            Post
+          </button>
+        </form>
 
-      <div className="space-y-6">
-        {questionsList.map(q => (
-          <div key={q._id} className="p-4 border border-gray-200 rounded-md">
-            <div className="flex justify-between items-center mb-2">
-              <p className="text-lg text-gray-800">{q.title}</p>
-              <span className={`text-sm font-medium ${q.answers?.length > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {q.answers?.length > 0 ? 'Answered' : 'Unanswered'}
-              </span>
-            </div>
-
-            {q.answers?.length > 0 && (
-              <div className="mt-4 mb-4 space-y-3">
-                {q.answers.map(ans => (
-                  <div key={ans._id} className="p-3 bg-green-50 border border-green-200 rounded">
-                    <strong className="block text-gray-700 mb-1">
-                      Answer {ans.author ? `by ${ans.author.name}` : ''}:
-                    </strong>
-                    <p className="text-gray-800 whitespace-pre-wrap">{ans.content}</p>
-                  </div>
-                ))}
+        <div className="space-y-6">
+          {questionsList.map(q => (
+            <div
+              key={q._id}
+              className="p-6 bg-white/50 backdrop-blur-md rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-lg font-semibold text-gray-900">{q.title}</p>
+                <span className={`text-sm font-medium ${q.answers?.length > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {q.answers?.length > 0 ? 'Answered' : 'Unanswered'}
+                </span>
               </div>
-            )}
 
-            {q.isAnswering ? (
-              <div className="space-y-2">
-                <textarea
-                  value={q.newAnswerContent}
-                  onChange={e => handleAnswerChange(q._id, e.target.value)}
-                  rows={3}
-                  placeholder="Type your answer..."
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-                <div className="flex gap-2">
-                  <button onClick={() => submitAnswer(q._id)} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Submit</button>
-                  <button onClick={() => toggleAnswerInput(q._id)} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+              {q.answers?.length > 0 && (
+                <div className="mt-4 mb-6 space-y-4">
+                  {q.answers.map(ans => (
+                    <div
+                      key={ans._id}
+                      className="p-4 bg-green-100/50 backdrop-blur-sm border border-green-200 rounded-md"
+                    >
+                      <strong className="block text-gray-700 text-sm font-medium mb-1">
+                        Answer {ans.author ? `by ${ans.author.name}` : ''}:
+                      </strong>
+                      <p className="text-gray-900 whitespace-pre-wrap">{ans.content}</p>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            ) : (
-              <button onClick={() => toggleAnswerInput(q._id)} className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-md hover:bg-blue-100">
-                Post an Answer
-              </button>
-            )}
-          </div>
-        ))}
+              )}
+
+              {q.isAnswering ? (
+                <div className="space-y-4">
+                  <textarea
+                    value={q.newAnswerContent}
+                    onChange={e => handleAnswerChange(q._id, e.target.value)}
+                    rows={3}
+                    placeholder="Type your answer..."
+                    className="w-full p-3 border-none rounded-md text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all duration-200 resize-none bg-white/50"
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => submitAnswer(q._id)}
+                      className="px-6 py-2 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white focus:ring-2 focus:ring-neon-green focus:ring-offset-2 transition-all duration-300"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      onClick={() => toggleAnswerInput(q._id)}
+                      className="px-6 py-2 bg-gray-400/50 backdrop-blur-sm text-gray-800 font-medium rounded-md hover:bg-gray-500/50 transition-all duration-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => toggleAnswerInput(q._id)}
+                  className="px-6 py-2 bg-blue-100/50 backdrop-blur-sm text-blue-800 font-medium rounded-md hover:bg-blue-200/50 transition-all duration-300"
+                >
+                  Post an Answer
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 // src/components/AIChatButton.js
-import React, { useState, useEffect, useRef, useContext } from 'react'; // 1. Ensure useContext is imported
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { AIResponseContext } from '../../context/AIResponseContext'; // 2. Make sure the path to your context is correct
+import { AIResponseContext } from '../../context/AIResponseContext';
 
 const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
 
@@ -12,21 +12,29 @@ function AIChatButton() {
   const messagesEndRef = useRef(null);
   const [chatSize, setChatSize] = useState("medium");
 
-  // 3. Use the context to get the setter function
-  const { setLastAIMessage } = useContext(AIResponseContext);
+  const { setLastAIMessage, setAiTasks } = useContext(AIResponseContext);
 
   const getChatDimensions = () => {
     switch (chatSize) {
       case "small":
-        return "w-64 h-64";
+        return "w-[90vw] max-w-xs h-[50vh] max-h-[16rem] sm:h-[60vh] sm:max-h-[20rem]";
       case "large":
-        return "w-[30rem] h-[35rem]";
+        return "w-[90vw] max-w-xl h-[80vh] max-h-[30rem] sm:max-h-[35rem] md:max-h-[40rem]";
       default:
-        return "w-80 h-96";
+        return "w-[90vw] max-w-md h-[70vh] max-h-[24rem] sm:max-h-[28rem]";
     }
   };
 
+  const getInputFieldClasses = () => {
+    return chatSize === "small" ? "p-1 sm:p-2 text-xs sm:text-sm" : "p-2 sm:p-3 text-sm sm:text-base";
+  };
+
+  const getSendButtonClasses = () => {
+    return chatSize === "small" ? "py-1 px-2 sm:px-3 text-xs sm:text-sm ml-1" : "py-1 sm:py-2 px-3 sm:px-4 text-sm sm:text-base ml-1";
+  };
+
   const increaseChatSize = () => {
+    if (window.innerWidth < 640 && chatSize === "medium") return;
     if (chatSize === "small") setChatSize("medium");
     else if (chatSize === "medium") setChatSize("large");
   };
@@ -50,56 +58,44 @@ function AIChatButton() {
     }
   }, [isOpen]);
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleChat = () => setIsOpen(!isOpen);
 
   const handleSendMessage = async () => {
-    if (inputMessage.trim() === '') return;
+    if (!inputMessage.trim()) return;
 
     const newUserMessage = { text: inputMessage.trim(), sender: 'user' };
     setMessages(prev => [...prev, newUserMessage]);
     setInputMessage('');
 
     const healthKeywords = [
-      // ... (your keywords remain unchanged)
-       "pain", "fever", "cough", "cold", "headache", "nausea", "vomiting", "diarrhea", "fatigue",
-       "rash", "dizziness", "swelling", "sore", "inflammation", "shortness of breath", "bleeding",
-       "chills", "sweating", "itching", "burning", "loss of appetite", "weight loss",
-       "diabetes", "hypertension", "asthma", "cancer", "infection", "covid", "flu", "stroke",
-       "allergy", "ulcer", "arthritis", "depression", "anxiety", "migraine", "tuberculosis",
-       "cholesterol", "thyroid", "obesity", "hepatitis", "anemia", "jaundice", "pneumonia",
-       "heart disease", "kidney", "liver", "lung", "acne", "eczema", "hiv", "aids",
-       "cardiology", "neurology", "dermatology", "psychiatry", "pediatrics", "gynecology",
-       "oncology", "radiology", "surgery", "orthopedics", "ENT", "pathology", "urology",
-       "doctor", "nurse", "treatment", "therapy", "surgery", "operation", "medication", "prescription",
-       "diagnosis", "checkup", "test", "scan", "x-ray", "mri", "ct scan", "blood test", "urine test",
-       "consultation", "hospital", "clinic", "healthcare", "insurance", "vaccine", "vaccination",
-       "injection", "dose", "tablet", "pill", "ointment", "capsule", "antibiotic",
-       "head", "chest", "heart", "lung", "stomach", "skin", "eye", "ear", "nose", "throat", "hand",
-       "foot", "back", "neck", "arm", "leg", "joint", "muscle", "bone", "spine", "abdomen", "brain",
-       "diet", "nutrition", "exercise", "yoga", "fitness", "weight", "sleep", "stress", "hydration",
-       "mental health", "well-being", "routine", "lifestyle", "rest", "recovery", "immune", "immunity"
+      "pain", "fever", "cough", "cold", "headache", "nausea", "vomiting", "diarrhea", "fatigue",
+      "rash", "dizziness", "swelling", "sore", "inflammation", "shortness of breath", "bleeding",
+      "chills", "sweating", "itching", "burning", "loss of appetite", "weight loss",
+      "diabetes", "hypertension", "asthma", "cancer", "infection", "covid", "flu", "stroke",
+      "allergy", "ulcer", "arthritis", "depression", "anxiety", "migraine", "tuberculosis",
+      "cholesterol", "thyroid", "obesity", "hepatitis", "anemia", "jaundice", "pneumonia",
+      "heart disease", "kidney", "liver", "lung", "acne", "eczema", "hiv", "aids",
+      "cardiology", "neurology", "dermatology", "psychiatry", "pediatrics", "gynecology",
+      "oncology", "radiology", "surgery", "orthopedics", "ENT", "pathology", "urology",
+      "doctor", "nurse", "treatment", "therapy", "surgery", "operation", "medication", "prescription",
+      "diagnosis", "checkup", "test", "scan", "x-ray", "mri", "ct scan", "blood test", "urine test",
+      "consultation", "hospital", "clinic", "healthcare", "insurance", "vaccine", "vaccination",
+      "injection", "dose", "tablet", "pill", "ointment", "capsule", "antibiotic",
+      "head", "chest", "heart", "lung", "stomach", "skin", "eye", "ear", "nose", "throat", "hand",
+      "foot", "back", "neck", "arm", "leg", "joint", "muscle", "bone", "spine", "abdomen", "brain",
+      "diet", "nutrition", "exercise", "yoga", "fitness", "weight", "sleep", "stress", "hydration",
+      "mental health", "well-being", "routine", "lifestyle", "rest", "recovery", "immune", "immunity"
     ];
 
-    const isHealthRelated = healthKeywords.some(keyword =>
-      inputMessage.toLowerCase().includes(keyword)
-    );
-
+    const isHealthRelated = healthKeywords.some(keyword => inputMessage.toLowerCase().includes(keyword));
     if (!isHealthRelated) {
       setMessages(prev => [...prev, { text: "Kindly ask health-related issues.", sender: 'ai' }]);
       return;
     }
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Note: Updated model name to a common one
-
-      const chat = model.startChat({
-        history: [],
-        generationConfig: {
-          temperature: 0.7,
-        }
-      });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const chat = model.startChat({ history: [], generationConfig: { temperature: 0.7 } });
 
       const fullPrompt = `
 You are a medical assistant chatbot for a healthcare website.
@@ -137,25 +133,25 @@ User: ${inputMessage}
       const response = await result.response;
       const aiResponse = await response.text();
 
-      // Add the full AI response to the chat window
       setMessages(prev => [...prev, { text: aiResponse, sender: 'ai' }]);
 
-      // 4. --- NEW LOGIC TO EXTRACT AND SEND DATA TO CONTEXT ---
-      // This regex captures the full <ul>...</ul> block that follows "<h4>Do these things:</h4>"
       const doTheseMatch = aiResponse.match(/<h4>Do these things:<\/h4>\s*(<ul>[\s\S]*?<\/ul>)/);
-
       if (doTheseMatch && doTheseMatch[1]) {
-        // doTheseMatch[1] contains the captured group: the entire <ul>...</ul> string
-        setLastAIMessage(doTheseMatch[1].trim());
-      } else {
-        // If the section is not found for any reason, send an empty string
-        setLastAIMessage("");
-      }
-      // --- END OF NEW LOGIC ---
+        const html = doTheseMatch[1].trim();
+        setLastAIMessage(html);
 
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const listItems = Array.from(doc.querySelectorAll('li')).map(li => li.textContent.trim());
+        setAiTasks(listItems);
+      } else {
+        setLastAIMessage("");
+        setAiTasks([]);
+      }
     } catch (err) {
       console.error("AI error:", err);
-      setLastAIMessage(""); // Also clear on error
+      setLastAIMessage("");
+      setAiTasks([]);
       setMessages(prev => [...prev, { text: "Something went wrong!", sender: 'ai' }]);
     }
   };
@@ -167,45 +163,29 @@ User: ${inputMessage}
   };
 
   return (
-    <div className="fixed bottom-14 right-14 z-50">
+    <div className="fixed bottom-8 sm:bottom-4 right-8 sm:right-4 z-50">
       {!isOpen ? (
         <button
           onClick={toggleChat}
-          className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          className="bg-emerald-500 hover:bg-emerald-400 text-white w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-emerald-300"
         >
-          <span className="font-bold text-xl">AI</span>
+          <span className="font-bold text-lg sm:text-xl">AI</span>
         </button>
       ) : (
-        <div className={`bg-white rounded-lg shadow-xl flex flex-col overflow-hidden ${getChatDimensions()}`}>
-          {/* Chat Header */}
-          <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
-            <h3 className="font-bold text-lg">AI Assistant</h3>
-            <div className="flex items-center gap-2">
-              <button onClick={decreaseChatSize} className="px-2 py-1 text-sm bg-white text-blue-600 rounded hover:bg-gray-100">&minus;</button>
-              <button onClick={increaseChatSize} className="px-2 py-1 text-sm bg-white text-blue-600 rounded hover:bg-gray-100">+</button>
-              <button
-                onClick={toggleChat}
-                className="text-white hover:text-gray-200 focus:outline-none text-2xl font-semibold"
-              >
-                &times;
-              </button>
+        <div className={`rounded-lg flex flex-col overflow-hidden ${getChatDimensions()} bg-white/20 backdrop-blur-md border-2 sm:border-4 border-fuchsia-400`}>
+          <div className="p-2 sm:p-4 flex justify-between items-center text-white bg-white/20 backdrop-blur-sm rounded-t-lg border-b border-fuchsia-400">
+            <h3 className="font-bold text-sm sm:text-lg">AI Assistant</h3>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <button onClick={decreaseChatSize} className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm bg-white/30 text-white rounded hover:bg-white/50">−</button>
+              <button onClick={increaseChatSize} className="px-1 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm bg-white/30 text-white rounded hover:bg-white/50">+</button>
+              <button onClick={toggleChat} className="text-white hover:text-gray-200 focus:outline-none text-lg sm:text-2xl font-semibold">×</button>
             </div>
           </div>
 
-          {/* Chat Messages */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50">
+          <div className="flex-1 p-2 sm:p-4 overflow-y-auto space-y-2 sm:space-y-3 bg-black/10">
             {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[75%] px-4 py-2 rounded-lg ${
-                    msg.sender === 'user'
-                      ? 'bg-blue-500 text-white self-end'
-                      : 'bg-gray-200 text-gray-800 self-start'
-                  }`}
-                >
+              <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] sm:max-w-[75%] px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm ${msg.sender === 'user' ? 'bg-cyan-500 text-white' : 'bg-white/30 text-white'}`}>
                   <div dangerouslySetInnerHTML={{ __html: msg.text }} />
                 </div>
               </div>
@@ -213,11 +193,10 @@ User: ${inputMessage}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Chat Input */}
-          <div className="p-4 border-t border-gray-200 flex items-center">
+          <div className="p-2 sm:p-4 border-t border-fuchsia-400 flex items-center">
             <input
               type="text"
-              className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`flex-1 rounded-lg font-bold bg-white/10 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition duration-300 ease-in-out ${getInputFieldClasses()}`}
               placeholder="Type your message..."
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
@@ -225,7 +204,7 @@ User: ${inputMessage}
             />
             <button
               onClick={handleSendMessage}
-              className="ml-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+              className={`bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors duration-200 ${getSendButtonClasses()}`}
             >
               Send
             </button>

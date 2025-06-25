@@ -46,14 +46,12 @@ const BookAppointments = () => {
     const reason = reasons[doctor._id]?.trim();
     const token = localStorage.getItem('userToken');
 
-    // Debug logs
-    console.log("👨‍⚕️ Booking for doctor:", doctor);
-    console.log("🆔 doctor._id:", doctor._id);
-    console.log("📝 reason:", reason);
-    console.log("🔐 token:", token);
-
-    if (!doctor._id || !reason) {
-      toast.error('Missing doctor ID or reason');
+    if (!doctor._id) {
+      toast.error('Invalid doctor selection');
+      return;
+    }
+    if (!reason) {
+      toast.error('Please write a reason');
       return;
     }
 
@@ -80,61 +78,82 @@ const BookAppointments = () => {
     }
   };
 
-  if (loading) return <div className="text-center p-4">Loading doctors...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-custom-gradient">
+        <div className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-800 text-lg">Loading doctors...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
-      <div className="text-center p-4 text-red-600">
-        {error}
-        <button
-          onClick={fetchDoctors}
-          className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md"
-        >
-          Retry
-        </button>
+      <div className="flex items-center justify-center min-h-screen bg-custom-gradient">
+        <div className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 text-center">
+          <p className="text-red-600 text-lg mb-4">{error}</p>
+          <button
+            onClick={fetchDoctors}
+            className="px-6 py-2 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white transition-all duration-300"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <Toaster />
-      <h2 className="text-2xl font-semibold mb-4">Book an Appointment</h2>
-      <div className="space-y-6">
-        {doctorsList.length === 0 ? (
-          <p className="text-gray-600">No doctors available.</p>
-        ) : (
-          doctorsList.map(doctor => (
-            <div key={doctor._id} className="flex items-start space-x-4 p-4 border rounded-lg">
-              <div className="w-24 h-24 bg-gray-200 rounded-md flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="text-xl font-medium">
+    <div className="min-h-screen bg-custom-gradient py-8">
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-white mb-8 text-center">
+          Book an Appointment
+        </h2>
+        <div className="space-y-6">
+          {doctorsList.length === 0 ? (
+            <div className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 text-center">
+              <p className="text-gray-800 text-lg">No doctors available.</p>
+            </div>
+          ) : (
+            doctorsList.map(doctor => (
+              <div
+                key={doctor._id}
+                className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl"
+              >
+                <h3 className="text-xl font-semibold text-gray-900">
                   {doctor.name.startsWith('Dr. ') ? doctor.name : `Dr. ${doctor.name}`}
                 </h3>
                 {doctor.specialty && (
-                  <p className="text-gray-600 mb-2">{doctor.specialty}</p>
+                  <p className="text-gray-600 text-sm mb-3">{doctor.specialty}</p>
                 )}
-                <label className="block mb-1 text-sm font-medium" htmlFor={`reason-${doctor._id}`}>
-                  Why you want to book appointment:
+                <label
+                  className="block mb-1 text-sm font-medium text-gray-800"
+                  htmlFor={`reason-${doctor._id}`}
+                >
+                  Reason for Appointment
                 </label>
                 <textarea
                   id={`reason-${doctor._id}`}
-                  className="w-full border rounded-md p-2 mb-3"
-                  rows={2}
-                  placeholder="Enter your reason..."
+                  className="w-full border-none rounded-md p-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all duration-200 resize-none bg-white/50"
+                  rows={3}
+                  placeholder="Describe your reason for the appointment..."
                   value={reasons[doctor._id] || ''}
                   onChange={(e) => handleReasonChange(doctor._id, e.target.value)}
                 />
                 <button
                   onClick={() => handleBook(doctor)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                  className="mt-4 px-6 py-2 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300"
+                  
                 >
                   Book Appointment
                 </button>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
