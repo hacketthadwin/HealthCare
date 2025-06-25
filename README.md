@@ -2,6 +2,25 @@
 
 A full-stack healthcare management web application designed to bridge the gap between patients and doctors using real-time appointment scheduling, communication, task management, and data visualization. Built with the **MERN stack (MongoDB, Express, React, Node.js)**, this platform empowers both patients and doctors with a seamless, intuitive interface, secure login system, and actionable insights.
 
+## 📸 Screenshots
+
+### Doctor Dashboard
+![Screenshot 6](./screenshots/"Screenshot (6).png")
+
+### Signup Page
+![Screenshot 7](./screenshots/"Screenshot (7).png")
+
+### Calendar View
+![Screenshot 8](./screenshots/"Screenshot (8).png")
+
+### Analytics Dashboard
+![Screenshot 9](./screenshots/"Screenshot (9).png")
+
+### Patient Community
+![Screenshot 10](./screenshots/"Screenshot (10).png")
+
+### Community Support Panel
+![Screenshot 13](./screenshots/"Screenshot (13).png")
 
 ## ⚙️ Features
 
