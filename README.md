@@ -4,23 +4,24 @@ A full-stack healthcare management web application designed to bridge the gap be
 
 ## 📸 Screenshots
 
-### Doctor Dashboard
-![Screenshot 6](./screenshots/"Screenshot (6).png")
+### Home Page
+![Screenshot 6](./screenshots/Screenshot%20%286%29.png)
 
 ### Signup Page
-![Screenshot 7](./screenshots/"Screenshot (7).png")
+![Screenshot 7](./screenshots/Screenshot%20%287%29.png)
 
-### Calendar View
-![Screenshot 8](./screenshots/"Screenshot (8).png")
+### Doctor's Page
+![Screenshot 8](./screenshots/Screenshot%20%288%29.png)
 
-### Analytics Dashboard
-![Screenshot 9](./screenshots/"Screenshot (9).png")
+### Patient's Page
+![Screenshot 9](./screenshots/Screenshot%20%289%29.png)
 
-### Patient Community
-![Screenshot 10](./screenshots/"Screenshot (10).png")
+### Book Appointment with Doctor
+![Screenshot 10](./screenshots/Screenshot%20%2810%29.png)
 
 ### Community Support Panel
-![Screenshot 13](./screenshots/"Screenshot (13).png")
+![Screenshot 13](./screenshots/Screenshot%20%2813%29.png)
+
 
 ## ⚙️ Features
 
