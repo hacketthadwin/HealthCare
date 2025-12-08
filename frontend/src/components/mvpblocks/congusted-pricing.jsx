@@ -55,7 +55,7 @@ const plans = [
     ],
     description: "Best for patients who want faster responses and enhanced AI support.",
     buttonText: "Subscribe as Patient",
-    href: "/sign-up",
+    href: "/signup",
     isPopular: false,
   },
   {
@@ -74,7 +74,7 @@ const plans = [
     ],
     description: "Ideal for doctors who want more visibility, insights, and patient reach.",
     buttonText: "Upgrade as Doctor",
-    href: "/sign-up",
+    href: "/signup",
     isPopular: true,
   },
   {
