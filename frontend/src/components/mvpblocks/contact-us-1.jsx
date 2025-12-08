@@ -62,12 +62,13 @@ export default function ContactUs1() {
                   isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
                 }
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="flex w-full gap-2">
+                className="flex w-full gap-2"
+              >
                 <h2 className="from-foreground to-foreground/80 mb-2 bg-gradient-to-r bg-clip-text text-4xl font-bold tracking-tight text-bold md:text-5xl">
                   Contact
                 </h2>
                 <span className="text-[#476407] dark:text-[#C2F84F] relative z-10 w-full text-4xl font-bold tracking-tight italic md:text-5xl">
-                  Us
+                  HealthHub
                 </span>
                 <SparklesCore
                   id="tsparticles"
@@ -87,19 +88,26 @@ export default function ContactUs1() {
                 }
                 transition={{ duration: 0.5, delay: 0.3 }}
                 onSubmit={handleSubmit}
-                className="mt-8 space-y-6">
+                className="mt-8 space-y-6"
+              >
+                <p className="text-muted-foreground text-sm md:text-base">
+                  Have a question about appointments, doctor availability, or health support?  
+                  Send us a message and our team will respond shortly.
+                </p>
+
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <motion.div
                     className="space-y-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}>
-                    <Label htmlFor="name">Name</Label>
+                    transition={{ delay: 0.4 }}
+                  >
+                    <Label htmlFor="name">Full Name</Label>
                     <Input
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your name"
+                      placeholder="Enter your full name"
                       required
                     />
                   </motion.div>
@@ -108,14 +116,15 @@ export default function ContactUs1() {
                     className="space-y-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}>
-                    <Label htmlFor="email">Email</Label>
+                    transition={{ delay: 0.5 }}
+                  >
+                    <Label htmlFor="email">Email Address</Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
+                      placeholder="Enter your email address"
                       required
                     />
                   </motion.div>
@@ -125,13 +134,14 @@ export default function ContactUs1() {
                   className="space-y-2"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}>
-                  <Label htmlFor="message">Message</Label>
+                  transition={{ delay: 0.6 }}
+                >
+                  <Label htmlFor="message">How can we help you?</Label>
                   <Textarea
                     id="message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Enter your message"
+                    placeholder="Write your message about appointments, doctors, or health queries"
                     required
                     className="h-40 resize-none"
                   />
@@ -140,11 +150,13 @@ export default function ContactUs1() {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full">
+                  className="w-full"
+                >
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-[#476407] dark:bg-[#C2F84F] text-[#FAFDEE] dark:text-[#1F3A4B] shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]">
+                    className="w-full bg-[#476407] dark:bg-[#C2F84F] text-[#FAFDEE] dark:text-[#1F3A4B] shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]"
+                  >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center">
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -167,13 +179,12 @@ export default function ContactUs1() {
               initial={{ opacity: 0, x: 20 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              /* Logic: 'hidden' by default, flex starting at 350px. 
-                 Added 'items-center' for vertical mode, 'md:items-start' for laptop.
-                 Changed 'pr-8' to 'px-4 md:pr-8 md:px-0' to keep it centered on mobile. */
-              className="relative my-8 hidden items-center justify-center overflow-hidden px-4 min-[350px]:flex md:items-start md:px-0 md:pr-8">
+              className="relative my-8 hidden items-center justify-center overflow-hidden px-4 min-[350px]:flex md:items-start md:px-0 md:pr-8"
+            >
               <div className="flex flex-col items-center justify-center overflow-hidden">
                 <article className="relative mx-auto h-[350px] min-h-60 max-w-[450px] overflow-hidden rounded-3xl border bg-gradient-to-b from-[#C2F84F] to-[#C2F84F]/5 p-6 text-3xl tracking-tight text-[#1F3A4B] dark:text-[#FAFDEE] md:h-[450px] md:min-h-80 md:p-8 md:text-4xl md:leading-[1.05] lg:text-5xl">
-                  Presenting you with the best UI possible.
+                  Your health matters.  
+                  <br />
                   <div className="absolute -right-20 -bottom-20 z-10 mx-auto flex h-full w-full max-w-[300px] items-center justify-center transition-all duration-700 hover:scale-105 md:-right-28 md:-bottom-28 md:max-w-[550px]">
                     <Earth
                       scale={1.1}
