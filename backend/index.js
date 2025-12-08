@@ -12,8 +12,8 @@ const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://healthhub-six.vercel.app',
-    'https://healthhub-p0rola8k0-adarsh-jhas-projects-f89f8c07.vercel.app'
+    'https://healthub-six.vercel.app',
+    'https://healthub-hmdmkbue6-adarsh-jhas-projects-f89f8c07.vercel.app'
   ],
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   credentials: true,
@@ -30,10 +30,10 @@ require("./config/database").connect();
 const io = new Server(server, {
   cors: {
     origin: [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'https://healthhub-six.vercel.app',
-      'https://healthhub-p0rola8k0-adarsh-jhas-projects-f89f8c07.vercel.app'
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://healthub-six.vercel.app',
+    'https://healthub-hmdmkbue6-adarsh-jhas-projects-f89f8c07.vercel.app'
     ],
     methods: ['GET', 'POST'],
     credentials: true
