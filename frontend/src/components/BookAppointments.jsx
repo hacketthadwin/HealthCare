@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { 
+  Stethoscope, 
+  Calendar, 
+  Send, 
+  AlertCircle, 
+  Activity 
+} from 'lucide-react';
 
 const BookAppointments = () => {
   const [doctorsList, setDoctorsList] = useState([]);
@@ -8,11 +15,10 @@ const BookAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all doctors with role: Doctor
   const fetchDoctors = async () => {
     try {
       const token = localStorage.getItem('userToken');
-      if (!token) throw new Error('No authentication token found. Please log in.');
+      if (!token) throw new Error('Authentication required.');
 
       const response = await axios.get(
         'http://localhost:5000/api/v1/book-appointment/users?role=Doctor',
@@ -23,14 +29,13 @@ const BookAppointments = () => {
       );
 
       const doctors = response.data.data;
-      if (!Array.isArray(doctors)) throw new Error('Unexpected response format');
+      if (!Array.isArray(doctors)) throw new Error('Sync format error.');
       setDoctorsList(doctors);
       setLoading(false);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch doctors';
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to sync staff';
       setError(errorMessage);
       setLoading(false);
-      console.error('Fetch error details:', err);
     }
   };
 
@@ -47,21 +52,18 @@ const BookAppointments = () => {
     const token = localStorage.getItem('userToken');
 
     if (!doctor._id) {
-      toast.error('Invalid doctor selection');
+      toast.error('Invalid selection');
       return;
     }
     if (!reason) {
-      toast.error('Please write a reason');
+      toast.error('Clinical reason required');
       return;
     }
 
     try {
-      const { data } = await axios.post(
+      await axios.post(
         'http://localhost:5000/api/v1/appointments/book',
-        {
-          doctorId: doctor._id,
-          reason,
-        },
+        { doctorId: doctor._id, reason },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,35 +72,33 @@ const BookAppointments = () => {
         }
       );
 
-      toast.success(`Appointment requested with ${doctor.name}`);
+      toast.success(`Request sent to ${doctor.name}`);
       setReasons(prev => ({ ...prev, [doctor._id]: '' }));
     } catch (err) {
-      console.error('❌ Booking failed:', err.response?.data || err.message);
-      toast.error(err?.response?.data?.message || 'Failed to book appointment');
+      toast.error(err?.response?.data?.message || 'Booking failed');
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-custom-gradient">
-        <div className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-800 text-lg">Loading doctors...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#FAFDEE] dark:bg-[#0a111a] px-4 text-center">
+        <Activity className="animate-spin text-[#1F3A4B] dark:text-[#C2F84F] mb-4" size={48} />
+        <p className="text-[#1F3A4B] dark:text-[#FAFDEE] font-black italic uppercase tracking-widest text-xs sm:text-base">Syncing Staff Log...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-custom-gradient">
-        <div className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 text-center">
-          <p className="text-red-600 text-lg mb-4">{error}</p>
+      <div className="flex items-center justify-center min-h-screen bg-[#FAFDEE] dark:bg-[#0a111a] px-4">
+        <div className="bg-white dark:bg-white/5 backdrop-blur-xl p-8 rounded-[2rem] sm:rounded-[3rem] border-2 border-[#1F3A4B]/10 shadow-3xl text-center max-w-md mx-auto">
+          <AlertCircle className="text-rose-600 mx-auto mb-4" size={48} />
+          <p className="text-[#1F3A4B] dark:text-[#FAFDEE] text-lg font-bold mb-6 italic">{error}</p>
           <button
             onClick={fetchDoctors}
-            className="px-6 py-2 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white transition-all duration-300"
+            className="w-full sm:w-auto px-10 py-4 bg-[#1F3A4B] text-[#C2F84F] font-black uppercase rounded-full hover:scale-105 transition-all shadow-xl"
           >
-            Retry
+            Retry Protocol
           </button>
         </div>
       </div>
@@ -106,50 +106,77 @@ const BookAppointments = () => {
   }
 
   return (
-    <div className="min-h-screen bg-custom-gradient py-8">
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-white mb-8 text-center">
-          Book an Appointment
-        </h2>
-        <div className="space-y-6">
+    <div className="min-h-screen bg-[#FAFDEE] dark:bg-[#0a111a] transition-all duration-500 font-sans relative overflow-hidden pb-24">
+      <Toaster position="top-right" toastOptions={{ duration: 3000, style: { background: '#1F3A4B', color: '#FAFDEE', borderRadius: '20px' } }} />
+
+      {/* BACKGROUND DECO */}
+      <div className="fixed inset-0 pointer-events-none opacity-40 dark:opacity-20">
+        <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%] bg-[#C2F84F] rounded-full blur-[140px]" />
+        <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-cyan-400 rounded-full blur-[140px]" />
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 pt-12 sm:pt-16">
+        <div className="text-center mb-10 sm:mb-16">
+          <h1 className="text-4xl sm:text-6xl font-black italic tracking-tighter uppercase leading-none text-[#1F3A4B] dark:text-[#FAFDEE] mb-4">
+            Book <span className="text-[#1F3A4B]/40 dark:text-[#C2F84F] sm:inline block">Appointment</span>
+          </h1>
+          <p className="text-[10px] sm:text-[12px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-60 text-[#1F3A4B] dark:text-[#FAFDEE] max-w-xs sm:max-w-none mx-auto">
+            Verified Physician Engagement Channel
+          </p>
+        </div>
+
+        <div className="space-y-6 sm:space-y-10">
           {doctorsList.length === 0 ? (
-            <div className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 text-center">
-              <p className="text-gray-800 text-lg">No doctors available.</p>
+            <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-[2rem] sm:rounded-[4rem] p-8 sm:p-16 text-center border-2 border-[#1F3A4B]/5 shadow-3xl">
+              <p className="text-xl sm:text-2xl font-black italic text-[#1F3A4B]/50 dark:text-[#FAFDEE]/50 uppercase">No medical personnel detected.</p>
             </div>
           ) : (
             doctorsList.map(doctor => (
               <div
                 key={doctor._id}
-                className="bg-white/50 backdrop-blur-md rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl"
+                className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-[2rem] sm:rounded-[4rem] p-6 sm:p-10 border-2 border-[#1F3A4B]/5 dark:border-white/5 shadow-3xl hover:border-[#C2F84F] transition-all group overflow-hidden relative"
               >
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {doctor.name.startsWith('Dr. ') ? doctor.name : `Dr. ${doctor.name}`}
-                </h3>
-                {doctor.specialty && (
-                  <p className="text-gray-600 text-sm mb-3">{doctor.specialty}</p>
-                )}
-                <label
-                  className="block mb-1 text-sm font-medium text-gray-800"
-                  htmlFor={`reason-${doctor._id}`}
-                >
-                  Reason for Appointment
-                </label>
-                <textarea
-                  id={`reason-${doctor._id}`}
-                  className="w-full border-none rounded-md p-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all duration-200 resize-none bg-white/50"
-                  rows={3}
-                  placeholder="Describe your reason for the appointment..."
-                  value={reasons[doctor._id] || ''}
-                  onChange={(e) => handleReasonChange(doctor._id, e.target.value)}
-                />
-                <button
-                  onClick={() => handleBook(doctor)}
-                  className="mt-4 px-6 py-2 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300"
-                  
-                >
-                  Book Appointment
-                </button>
+                {/* ICON DECO - Hidden on mobile for clutter control */}
+                <Stethoscope className="absolute right-[-10px] top-[-10px] opacity-[0.03] dark:opacity-[0.07] transition-all group-hover:rotate-12 hidden md:block" size={240} />
+
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 relative z-10">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-2">
+                      <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-[#1F3A4B] text-[#C2F84F] shadow-lg shrink-0">
+                        <Calendar size={20} className="sm:w-6 sm:h-6" />
+                      </div>
+                      <h3 className="text-xl sm:text-3xl font-black italic tracking-tight text-[#1F3A4B] dark:text-[#FAFDEE] uppercase leading-none">
+                        {doctor.name.startsWith('Dr. ') ? doctor.name : `Dr. ${doctor.name}`}
+                      </h3>
+                    </div>
+                    {doctor.specialty && (
+                      <p className="text-[9px] sm:text-[10px] font-black uppercase text-[#1F3A4B]/40 dark:text-[#FAFDEE]/40 tracking-widest bg-[#1F3A4B]/5 dark:bg-white/5 py-1 px-3 sm:px-4 rounded-full w-fit mt-3 sm:ml-12 border border-[#1F3A4B]/5 dark:border-white/5">
+                        Specialization: {doctor.specialty}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex-1 space-y-3 sm:space-y-4">
+                    <p className="text-[9px] sm:text-[10px] font-black uppercase text-[#1F3A4B] dark:text-[#FAFDEE] tracking-widest lg:ml-4 leading-none">Consultation Reason</p>
+                    <textarea
+                      className="w-full p-4 sm:p-6 bg-[#1F3A4B]/5 dark:bg-white/5 rounded-[1.5rem] sm:rounded-[2.5rem] text-[#1F3A4B] dark:text-white font-bold outline-none border-2 border-transparent focus:border-[#C2F84F] transition-all placeholder-[#1F3A4B]/20 dark:placeholder-white/20 text-xs sm:text-sm italic resize-none"
+                      rows={2}
+                      placeholder="Brief clinical context..."
+                      value={reasons[doctor._id] || ''}
+                      onChange={(e) => handleReasonChange(doctor._id, e.target.value)}
+                    />
+                  </div>
+
+                  <div className="lg:w-fit w-full flex justify-end">
+                    <button
+                      onClick={() => handleBook(doctor)}
+                      className="w-full lg:w-auto group flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-6 bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] font-black italic rounded-[1.5rem] sm:rounded-[2.5rem] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-[#1F3A4B]/30 dark:shadow-[#C2F84F]/20 leading-none text-sm sm:text-base"
+                    >
+                      <Send size={18} className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                      ENGAGE DR.
+                    </button>
+                  </div>
+                </div>
               </div>
             ))
           )}

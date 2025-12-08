@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { 
+  Send, 
+  MessageCircle, 
+  HelpCircle, 
+  User, 
+  CheckCircle, 
+  Activity, 
+  XCircle 
+} from 'lucide-react';
 
 const API_BASE = 'http://localhost:5000/api/v1';
 
@@ -84,84 +93,120 @@ const CommunitySupport = () => {
   };
 
   return (
-    <div className="min-h-screen bg-custom-gradient py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-white mb-8 text-center">Community Support</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-start sm:items-center mb-10 gap-4 bg-white/50 backdrop-blur-md rounded-lg p-6 shadow-lg">
-          <input
-            type="text"
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-            placeholder="Type your question here..."
-            className="flex-1 p-3 border-none rounded-md text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all duration-200 bg-white/50"
-          />
+    <div className="min-h-screen bg-[#FAFDEE] dark:bg-[#0a111a] transition-all duration-500 font-sans pb-24 relative overflow-hidden">
+      {/* BACKGROUND ELEMENTS */}
+      <div className="fixed inset-0 pointer-events-none opacity-40 dark:opacity-20">
+        <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%] bg-[#C2F84F] rounded-full blur-[140px]" />
+        <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-cyan-400 rounded-full blur-[140px]" />
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 relative z-10 pt-16">
+        {/* HEADER */}
+        <div className="text-center mb-16">
+          <h1 className="text-6xl font-black italic tracking-tighter uppercase leading-none text-[#1F3A4B] dark:text-[#FAFDEE] mb-4">
+            Peer <span className="text-[#1F3A4B]/40 dark:text-[#C2F84F]">Hub</span>
+          </h1>
+          <p className="text-[12px] font-black uppercase tracking-[0.3em] opacity-60 text-[#1F3A4B] dark:text-[#FAFDEE]">
+            Verified Community Support Base
+          </p>
+        </div>
+
+        {/* POST QUESTION BOX */}
+        <form 
+          onSubmit={handleSubmit} 
+          className="flex flex-col sm:flex-row items-center mb-16 gap-4 bg-white dark:bg-white/5 backdrop-blur-2xl border-2 border-[#1F3A4B]/10 dark:border-white/10 p-4 rounded-[3rem] shadow-2xl"
+        >
+          <div className="flex-1 w-full flex items-center px-4 gap-4">
+            <HelpCircle className="text-[#1F3A4B] dark:text-[#C2F84F] opacity-40" />
+            <input
+              type="text"
+              value={question}
+              onChange={e => setQuestion(e.target.value)}
+              placeholder="Ask the community about clinical protocols..."
+              className="w-full bg-transparent py-4 text-[#1F3A4B] dark:text-white placeholder-[#1F3A4B]/40 dark:placeholder-white/40 font-bold outline-none"
+            />
+          </div>
           <button
             type="submit"
-            className="px-6 py-3 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white focus:ring-2 focus:ring-neon-green focus:ring-offset-2 transition-all duration-300"
+            className="w-full sm:w-auto px-10 py-4 bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] font-black italic rounded-[2rem] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
           >
-            Post
+            <Send size={18} />
+            POST HUB
           </button>
         </form>
 
-        <div className="space-y-6">
+        {/* FEED */}
+        <div className="space-y-8">
           {questionsList.map(q => (
             <div
               key={q._id}
-              className="p-6 bg-white/50 backdrop-blur-md rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl"
+              className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-[3rem] border-2 border-[#1F3A4B]/5 dark:border-white/5 p-8 transition-all hover:border-[#1F3A4B]/20 dark:hover:border-white/20"
             >
-              <div className="flex justify-between items-center mb-4">
-                <p className="text-lg font-semibold text-gray-900">{q.title}</p>
-                <span className={`text-sm font-medium ${q.answers?.length > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {q.answers?.length > 0 ? 'Answered' : 'Unanswered'}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-2xl bg-[#1F3A4B] text-[#C2F84F]">
+                    <MessageCircle size={24}/>
+                  </div>
+                  <p className="text-2xl font-black italic tracking-tight text-[#1F3A4B] dark:text-[#FAFDEE] uppercase">
+                    {q.title}
+                  </p>
+                </div>
+                <span className={`flex items-center gap-2 px-4 py-1.5 rounded-full font-black text-[10px] tracking-widest uppercase ${q.answers?.length > 0 ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
+                  {q.answers?.length > 0 ? <CheckCircle size={12}/> : <Activity size={12}/>}
+                  {q.answers?.length > 0 ? 'Verified' : 'Unresolved'}
                 </span>
               </div>
 
+              {/* ANSWERS CONTAINER */}
               {q.answers?.length > 0 && (
-                <div className="mt-4 mb-6 space-y-4">
+                <div className="space-y-4 mb-8 border-l-4 border-[#C2F84F]/30 pl-6">
                   {q.answers.map(ans => (
-                    <div
-                      key={ans._id}
-                      className="p-4 bg-green-100/50 backdrop-blur-sm border border-green-200 rounded-md"
-                    >
-                      <strong className="block text-gray-700 text-sm font-medium mb-1">
-                        Answer {ans.author ? `by ${ans.author.name}` : ''}:
-                      </strong>
-                      <p className="text-gray-900 whitespace-pre-wrap">{ans.content}</p>
+                    <div key={ans._id} className="relative p-4 rounded-2xl bg-[#1F3A4B]/5 dark:bg-white/5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <User size={14} className="opacity-40" />
+                        <strong className="text-[10px] font-black uppercase tracking-widest opacity-40">
+                          {ans.author?.name || 'hub_peer'}
+                        </strong>
+                      </div>
+                      <p className="text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 text-sm font-bold leading-relaxed">
+                        {ans.content}
+                      </p>
                     </div>
                   ))}
                 </div>
               )}
 
+              {/* INPUT AREA */}
               {q.isAnswering ? (
-                <div className="space-y-4">
+                <div className="space-y-4 pt-6 border-t-2 border-[#1F3A4B]/5">
                   <textarea
                     value={q.newAnswerContent}
                     onChange={e => handleAnswerChange(q._id, e.target.value)}
                     rows={3}
-                    placeholder="Type your answer..."
-                    className="w-full p-3 border-none rounded-md text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all duration-200 resize-none bg-white/50"
+                    className="w-full p-6 bg-[#1F3A4B]/5 dark:bg-white/5 rounded-3xl text-[#1F3A4B] dark:text-white font-bold outline-none border-2 border-transparent focus:border-[#C2F84F] transition-all"
+                    placeholder="Provide supportive knowledge..."
                   />
                   <div className="flex gap-3">
                     <button
                       onClick={() => submitAnswer(q._id)}
-                      className="px-6 py-2 bg-neon-green text-black font-bold rounded-md hover:bg-black hover:text-white focus:ring-2 focus:ring-neon-green focus:ring-offset-2 transition-all duration-300"
+                      className="px-8 py-3 bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] font-black rounded-2xl transition-all"
                     >
-                      Submit
+                      SUBMIT
                     </button>
                     <button
                       onClick={() => toggleAnswerInput(q._id)}
-                      className="px-6 py-2 bg-gray-400/50 backdrop-blur-sm text-gray-800 font-medium rounded-md hover:bg-gray-500/50 transition-all duration-300"
+                      className="px-8 py-3 bg-[#1F3A4B]/10 dark:bg-white/10 font-black rounded-2xl flex items-center gap-2 hover:bg-[#1F3A4B]/20"
                     >
-                      Cancel
+                      <XCircle size={18}/> CANCEL
                     </button>
                   </div>
                 </div>
               ) : (
                 <button
                   onClick={() => toggleAnswerInput(q._id)}
-                  className="px-6 py-2 bg-blue-100/50 backdrop-blur-sm text-blue-800 font-medium rounded-md hover:bg-blue-200/50 transition-all duration-300"
+                  className="px-10 py-4 bg-[#C2F84F] text-[#1F3A4B] font-black italic rounded-[2rem] hover:scale-105 active:scale-95 transition-all shadow-lg border border-[#1F3A4B]/10"
                 >
-                  Post an Answer
+                  ENGAGE HUB
                 </button>
               )}
             </div>

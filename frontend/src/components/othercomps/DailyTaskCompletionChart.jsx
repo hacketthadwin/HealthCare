@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -9,18 +9,12 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 import axios from 'axios';
+import { Activity, ShieldCheck, Zap } from 'lucide-react';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 const formatDate = (dateString) => {
   const options = { month: 'short', day: 'numeric' };
@@ -28,20 +22,28 @@ const formatDate = (dateString) => {
 };
 
 function DailyTaskCompletionChart() {
-  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+  const [taskRawData, setTaskRawData] = useState({ labels: [], values: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const intervalRef = useRef(null);
+  const chartRef = useRef(null);
+
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   const fetchTaskData = async () => {
     try {
       setLoading(true);
-      setError(null);
       const res = await axios.get("http://localhost:5000/api/v1/get-7days-tasks");
       if (!res.data.success) throw new Error(res.data.message);
 
       const rawTasks = res.data.data;
-
       const grouped = {};
       rawTasks.forEach(task => {
         const date = task.date.split('T')[0];
@@ -62,27 +64,11 @@ function DailyTaskCompletionChart() {
         last7.push({ date: dateStr, percentage: parseFloat(pct.toFixed(2)) });
       }
 
-      const labels = last7.map(item => formatDate(item.date));
-      const percentages = last7.map(item => item.percentage);
-
-      setChartData({
-        labels,
-        datasets: [
-          {
-            label: 'Daily Task Completion (%)',
-            data: percentages,
-            borderColor: 'rgba(0, 255, 255, 1)', // Neon Cyan
-            backgroundColor: 'rgba(0, 255, 255, 0.2)', // Slightly transparent neon cyan fill
-            tension: 0.3,
-            pointBackgroundColor: 'rgba(0, 255, 255, 1)',
-            pointBorderColor: 'rgba(255, 255, 255, 0.8)',
-            pointHoverBackgroundColor: 'rgba(255, 255, 255, 1)',
-            pointHoverBorderColor: 'rgba(0, 255, 255, 1)',
-          },
-        ],
+      setTaskRawData({
+        labels: last7.map(item => formatDate(item.date)),
+        values: last7.map(item => item.percentage)
       });
     } catch (e) {
-      console.error('Error fetching task data:', e);
       setError(e.message || 'Unknown error');
     } finally {
       setLoading(false);
@@ -91,136 +77,106 @@ function DailyTaskCompletionChart() {
 
   useEffect(() => {
     fetchTaskData();
-    intervalRef.current = setInterval(fetchTaskData, 24 * 60 * 60 * 1000);
-    return () => clearInterval(intervalRef.current);
+    const interval = setInterval(fetchTaskData, 24 * 60 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const options = {
+  const chartData = useMemo(() => ({
+    labels: taskRawData.labels,
+    datasets: [{
+      label: 'Compliance',
+      data: taskRawData.values,
+      fill: true,
+      borderColor: '#C2F84F',
+      borderWidth: 4, // Slightly reduced for better small-screen visibility
+      pointBackgroundColor: isDark ? '#FAFDEE' : '#1F3A4B',
+      pointBorderColor: '#C2F84F',
+      pointBorderWidth: 2,
+      pointRadius: 5,
+      tension: 0.45,
+      backgroundColor: (context) => {
+        const chart = context.chart;
+        const {ctx, chartArea} = chart;
+        if (!chartArea) return null;
+        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        gradient.addColorStop(0, 'rgba(194, 248, 79, 0.35)');
+        gradient.addColorStop(1, 'rgba(194, 248, 79, 0)');
+        return gradient;
+      },
+    }],
+  }), [taskRawData, isDark]);
+
+  const options = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+        duration: 400,
+        easing: 'easeInOutQuad'
+    },
     plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: 'rgba(255, 255, 255, 0.9)',
-          font: {
-            size: window.innerWidth < 640 ? 12 : 14, // Responsive font size
-            weight: 'bold',
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: 'Your Daily Task Completion Rate',
-        font: {
-          size: window.innerWidth < 640 ? 14 : 18, // Responsive font size
-          weight: 'bold',
-        },
-        color: 'white',
-      },
+      legend: { display: false },
       tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        titleColor: 'rgba(255,255,255,1)',
-        bodyColor: 'rgba(255,255,255,0.9)',
-        borderColor: 'rgba(0,255,255,0.8)',
-        borderWidth: 1,
-        cornerRadius: 8,
-        callbacks: {
-          label: function (context) {
-            let label = context.dataset.label || '';
-            if (label) label += ': ';
-            if (context.parsed.y !== null) label += context.parsed.y + '%';
-            return label;
-          },
-        },
+        backgroundColor: '#1F3A4B',
+        titleColor: '#C2F84F',
+        displayColors: false,
+        padding: 12,
       },
     },
     scales: {
       y: {
         beginAtZero: true,
-        min: 0,
         max: 100,
-        title: {
-          display: true,
-          text: 'Completion Percentage (%)',
-          color: 'rgba(255, 0, 255, 0.8)',
-          font: {
-            size: window.innerWidth < 640 ? 12 : 14, // Responsive font size
-            weight: 'bold',
-          },
-        },
+        grid: { color: isDark ? 'rgba(250, 253, 238, 0.1)' : 'rgba(31, 58, 75, 0.04)', drawBorder: false },
         ticks: {
-          callback: value => value + '%',
-          color: 'rgba(255, 0, 255, 0.8)',
-          font: {
-            size: window.innerWidth < 640 ? 10 : 12, // Responsive font size
-            weight: 'bold',
-          },
-        },
-        grid: {
-          color: 'rgba(255, 0, 255, 0.2)',
-          borderColor: 'rgba(255, 0, 255, 0.5)',
-          drawBorder: true,
-          drawOnChartArea: true,
-          drawTicks: false,
+          color: isDark ? '#FAFDEE' : '#1F3A4B',
+          font: { weight: '700', size: 9 }, // Fluid font
+          callback: (v) => v + '%',
+          maxTicksLimit: 6,
         },
       },
       x: {
-        title: {
-          display: true,
-          text: 'Date',
-          color: 'rgba(0, 255, 255, 0.8)',
-          font: {
-            size: window.innerWidth < 640 ? 12 : 14, // Responsive font size
-            weight: 'bold',
-          },
-        },
+        grid: { display: false },
         ticks: {
-          color: 'rgba(0, 255, 255, 0.8)',
-          font: {
-            size: window.innerWidth < 640 ? 10 : 12, // Responsive font size
-            weight: 'bold',
-          },
-          maxRotation: window.innerWidth < 640 ? 45 : 0, // Rotate labels on mobile
-          minRotation: window.innerWidth < 640 ? 45 : 0,
-        },
-        grid: {
-          color: 'rgba(0, 255, 255, 0.2)',
-          borderColor: 'rgba(0, 255, 255, 0.5)',
-          drawBorder: true,
-          drawOnChartArea: true,
-          drawTicks: false,
+          color: isDark ? '#FAFDEE' : '#1F3A4B',
+          font: { weight: '900', size: 10, style: 'italic' }, // Fluid font
         },
       },
     },
-  };
+  }), [isDark]);
 
   if (loading) {
     return (
-      <div className="w-full max-w-2xl mx-auto p-3 sm:p-4 text-center text-white bg-white/20 backdrop-blur-md rounded-lg">
-        Loading task progress...
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div className="w-full max-w-2xl mx-auto p-3 sm:p-4 text-center text-rose-500 bg-white/20 backdrop-blur-md rounded-lg">
-        Error: {error}
-      </div>
-    );
-  }
-  if (chartData.labels.length === 0) {
-    return (
-      <div className="w-full max-w-2xl mx-auto p-3 sm:p-4 text-center text-white bg-white/20 backdrop-blur-md rounded-lg">
-        No task data available yet. Start completing tasks!
+      <div className="w-full h-[24rem] md:h-[32rem] flex flex-col items-center justify-center p-6 md:p-8 bg-white/40 dark:bg-[#1F3A4B]/10 backdrop-blur-md rounded-[2.5rem] md:rounded-[4rem] border-2 border-dashed border-[#1F3A4B]/10 animate-pulse">
+        <Activity className="text-[#1F3A4B] dark:text-[#C2F84F] animate-spin mb-4" size={32} />
+        <p className="text-[10px] text-center font-black uppercase tracking-[0.2em] text-[#1F3A4B] dark:text-[#FAFDEE]">Updating Verification History...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-[600px] ml-0 my-4 sm:my-6 p-3 sm:p-4 h-[22rem] sm:h-[26rem] md:h-[30rem] 
-                    bg-white/20 backdrop-blur-md rounded-lg">
-      <Line data={chartData} options={options} />
+    <div className="w-full p-6 md:p-10 h-[24rem] md:h-[32rem] bg-white dark:bg-[#1F3A4B]/20 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[4rem] border-2 border-[#1F3A4B]/5 dark:border-white/5 shadow-3xl flex flex-col overflow-hidden group transition-[background-color,border-color] duration-500 relative">
+      <div className="absolute top-0 right-0 p-8 md:p-12 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-1000 hidden sm:block">
+        <ShieldCheck size={180} className="text-[#1F3A4B] dark:text-[#C2F84F]" />
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-4 relative z-10 w-full">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+               <span className="h-2 w-2 rounded-full bg-[#C2F84F] shadow-[0_0_10px_#C2F84F]" />
+               <h2 className="text-xl sm:text-2xl md:text-3xl font-black italic tracking-tighter uppercase text-[#1F3A4B] dark:text-[#FAFDEE] leading-tight">Care Adherence</h2>
+            </div>
+            <p className="text-[8px] sm:text-[10px] font-black opacity-40 uppercase tracking-[0.2em] md:tracking-[0.25em] ml-4 text-[#1F3A4B] dark:text-[#FAFDEE]">Live Compliance Analysis</p>
+          </div>
+          
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#1F3A4B] dark:bg-[#C2F84F] text-[#C2F84F] dark:text-[#1F3A4B] rounded-xl sm:rounded-2xl shadow-xl border border-[#C2F84F]/20 transition-all active:scale-95">
+            <Zap size={12} fill="currentColor" />
+            <span className="font-black text-[8px] sm:text-[10px] uppercase tracking-widest leading-none whitespace-nowrap">Synced to tasks</span>
+          </div>
+      </div>
+      
+      <div className="flex-1 w-full relative z-10 min-h-0">
+        <Line ref={chartRef} data={chartData} options={options} />
+      </div>
     </div>
   );
 }

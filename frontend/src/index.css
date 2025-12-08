@@ -2,20 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    margin: 0;
-  background-color: #BBF7D0;
-  /* Set global background color */
-  color: #111827;
-  /* Nice dark text for contrast */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-    @apply overflow-x-hidden;
-    @apply bg-custom-gradient min-h-screen;
+@layer base {
+  :root {
+    /* LIGHT MODE: Deep Navy Background */
+    --body-bg: #FAFDEE;
+    --body-text: #1F3A4B;
+    
+    /* Separated Sparkle logic (for the glow components) */
+    --sparkle-neon: #476407; 
   }
+
+  .dark {
+    /* DARK MODE: Cream Background */
+    --body-bg: #1F3A4B;
+    --body-text: #FAFDEE;
+    
+    /* Sparkle logic for dark mode */
+    --sparkle-neon: #C2F84F; 
+  }
+
+  body {
+    margin: 0;
+    /* Use the specific Body Background variable */
+    background-color: var(--body-bg);
+    color: var(--body-text);
+    
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Removed conflicting @apply background logic */
+    @apply overflow-x-hidden min-h-screen transition-colors duration-300;
+  }
+}
   /* Stylish Calendar Customization */
 .react-calendar {
   border: none;
@@ -152,4 +171,13 @@ code {
   text-shadow:
     0 0 5px #ffcc00,
     0 0 10px #ffcc00;
+}
+@layer base {
+  :root {
+    --sparkle-color: #476407; /* Your Light mode color */
+  }
+
+  .dark {
+    --sparkle-color: #C2F84F; /* Your Dark mode color */
+  }
 }
