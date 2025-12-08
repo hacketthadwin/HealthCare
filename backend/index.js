@@ -9,11 +9,17 @@ const { Server } = require('socket.io');
 const server = http.createServer(app);
 
 const corsOptions = {
- origin: 'http://localhost:3000', // your frontend
- methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Ensure all necessary methods are allowed
- credentials: true,
- allowedHeaders: ['Content-Type', 'Authorization']
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://healthhub-six.vercel.app',
+    'https://healthhub-p0rola8k0-adarsh-jhas-projects-f89f8c07.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -22,52 +28,57 @@ require("./config/database").connect();
 
 // Socket.IO server setup
 const io = new Server(server, {
- cors: {
- origin: 'http://localhost:3000',
- methods: ['GET', 'POST'],
- credentials: true
- }
+  cors: {
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://healthhub-six.vercel.app',
+      'https://healthhub-p0rola8k0-adarsh-jhas-projects-f89f8c07.vercel.app'
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
 });
 
 io.on('connection', (socket) => {
- console.log('User connected:', socket.id);
- socket.on('joinRoom', async ({ roomId, userId, role }) => {
- socket.join(roomId);
- console.log(`${role} ${userId} joined room: ${roomId}`);
+  console.log('User connected:', socket.id);
 
-try {
- const messages = await Message.find({ roomId }).sort({ timestamp: 1 });
- socket.emit('previousMessages', messages);
- } catch (err) {
- console.error('Error fetching previous messages:', err);
- }
- });
+  socket.on('joinRoom', async ({ roomId, userId, role }) => {
+    socket.join(roomId);
+    console.log(`${role} ${userId} joined room: ${roomId}`);
 
- socket.on('sendMessage', async ({ roomId, senderId, senderName, receiverId, message }) => {
- io.to(roomId).emit('receiveMessage', {
- senderId,
- senderName,
- message,
- timestamp: Date.now(),
- roomId
- });
+    try {
+      const messages = await Message.find({ roomId }).sort({ timestamp: 1 });
+      socket.emit('previousMessages', messages);
+    } catch (err) {
+      console.error('Error fetching previous messages:', err);
+    }
+  });
 
-try {
- await Message.create({
- roomId,
- sender: senderId,
- receiver: receiverId,
- message
- });
- } catch (err) {
- console.error('Error saving message:', err);
- }
- });
+  socket.on('sendMessage', async ({ roomId, senderId, senderName, receiverId, message }) => {
+    io.to(roomId).emit('receiveMessage', {
+      senderId,
+      senderName,
+      message,
+      timestamp: Date.now(),
+      roomId
+    });
 
+    try {
+      await Message.create({
+        roomId,
+        sender: senderId,
+        receiver: receiverId,
+        message
+      });
+    } catch (err) {
+      console.error('Error saving message:', err);
+    }
+  });
 
- socket.on('disconnect', () => {
- console.log('User disconnected:', socket.id);
- });
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
 });
 
 // Routes
@@ -76,9 +87,9 @@ app.use("/api/v1", user);
 app.use("/api/v1/appointments", require("./routes/appointmentRoutes"));
 
 app.get('/', (req, res) => {
- res.send('Hello, World!');
+  res.send('Hello, World!');
 });
 
 server.listen(5000, () => {
- console.log('Server is running on port 5000');
+  console.log('Server is running on port 5000');
 });
