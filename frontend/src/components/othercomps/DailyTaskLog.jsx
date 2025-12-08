@@ -96,7 +96,7 @@ function DailyTaskLog({ onTaskUpdate }) {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/v1/get-7days-tasks", {
+      const res = await axios.get("https://healthcare-97r0.onrender.com/api/v1/get-7days-tasks", {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -117,7 +117,7 @@ function DailyTaskLog({ onTaskUpdate }) {
 
   const postNewTask = useCallback(async (description) => {
     const token = getAuthToken();
-    const res = await axios.post("http://localhost:5000/api/v1/post-tasks", 
+    const res = await axios.post("https://healthcare-97r0.onrender.com/api/v1/post-tasks", 
       { name: description, date: todayDateString, completed: false }, 
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -126,7 +126,7 @@ function DailyTaskLog({ onTaskUpdate }) {
 
   const updateTaskCompletion = useCallback(async (taskId, completed) => {
     const token = getAuthToken();
-    const res = await axios.patch(`http://localhost:5000/api/v1/tasks/${taskId}`, 
+    const res = await axios.patch(`https://healthcare-97r0.onrender.com/api/v1/tasks/${taskId}`, 
       { completed }, 
       { headers: { Authorization: `Bearer ${token}` } }
     );

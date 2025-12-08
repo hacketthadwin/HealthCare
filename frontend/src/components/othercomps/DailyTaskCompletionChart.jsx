@@ -40,7 +40,7 @@ function DailyTaskCompletionChart() {
   const fetchTaskData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/v1/get-7days-tasks");
+      const res = await axios.get("https://healthcare-97r0.onrender.com/api/v1/get-7days-tasks");
       if (!res.data.success) throw new Error(res.data.message);
 
       const rawTasks = res.data.data;

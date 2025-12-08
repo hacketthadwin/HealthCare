@@ -13,7 +13,7 @@ import DailyTaskLog from './othercomps/DailyTaskLog';
 import CurrentAppointments from './othercomps/CurrentAppointments';
 import AIChatButton from './othercomps/AIChatButton';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://healthcare-97r0.onrender.com');
 
 const PatientPage = () => {
     const navigate = useNavigate();
@@ -47,7 +47,7 @@ const PatientPage = () => {
 
     const fetchDoctors = useCallback(async (token) => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/v1/appointments/patient-doctors`, {
+            const response = await axios.get(`https://healthcare-97r0.onrender.com/api/v1/appointments/patient-doctors`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const uniqueDoctorsMap = {};

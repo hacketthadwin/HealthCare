@@ -34,7 +34,7 @@ const Signup = () => {
 
     setLoading(true);
 
-    axios.post("http://localhost:5000/api/v1/signup", {
+    axios.post("https://healthcare-97r0.onrender.com/api/v1/signup", {
       email,
       password,
       name: username,

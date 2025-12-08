@@ -21,7 +21,7 @@ const BookAppointments = () => {
       if (!token) throw new Error('Authentication required.');
 
       const response = await axios.get(
-        'http://localhost:5000/api/v1/book-appointment/users?role=Doctor',
+        'https://healthcare-97r0.onrender.com/api/v1/book-appointment/users?role=Doctor',
         {
           headers: { Authorization: `Bearer ${token}` },
           timeout: 5000,
@@ -62,7 +62,7 @@ const BookAppointments = () => {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/v1/appointments/book',
+        'https://healthcare-97r0.onrender.com/api/v1/appointments/book',
         { doctorId: doctor._id, reason },
         {
           headers: {

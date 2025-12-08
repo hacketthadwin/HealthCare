@@ -9,7 +9,7 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 import { LogOut, MessageSquare, Users, Send, ChevronRight, X, Stethoscope, Sun, Moon, Clock, UserCheck, ArrowLeft } from 'lucide-react';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://healthcare-97r0.onrender.com');
 
 const DoctorPage = () => {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const DoctorPage = () => {
       setUserId(decoded.id);
     } catch { localStorage.clear(); navigate("/login"); return; }
     try {
-      const res = await axios.get("http://localhost:5000/api/v1/appointments/doctorappointment", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get("https://healthcare-97r0.onrender.com/api/v1/appointments/doctorappointment", { headers: { Authorization: `Bearer ${token}` } });
       const allAppointments = res.data.data;
       const pending = allAppointments.filter(app => app.status === 'pending');
       const accepted = allAppointments.filter(app => app.status === 'accepted' || app.status === 'completed');
@@ -107,7 +107,7 @@ const DoctorPage = () => {
     const token = localStorage.getItem("userToken");
     try {
       const newStatus = action === "accept" ? "accepted" : "rejected";
-      await axios.patch(`http://localhost:5000/api/v1/appointments/${appointmentId}`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.patch(`https://healthcare-97r0.onrender.com/api/v1/appointments/${appointmentId}`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
       toast.success(`Appointment ${action}ed successfully!`);
       fetchAppointments();
     } catch (err) { toast.error(`Failed to ${action} appointment.`); }
