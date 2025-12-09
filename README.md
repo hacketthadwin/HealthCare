@@ -5,25 +5,25 @@ A full-stack healthcare web application designed to bridge the gap between patie
 ## 📸 Screenshots
 
 ### Home Page
-![Screenshot 6](./screenshots/Screenshot%20%286%29.png)
+![Screenshot 6](./screenshots/home.png)
 
 ### Signup Page
-![Screenshot 7](./screenshots/Screenshot%20%287%29.png)
+![Screenshot 7](./screenshots/signup.png)
 
 ### Doctor's Page
-![Screenshot 8](./screenshots/Screenshot%20%288%29.png)
+![Screenshot 8](./screenshots/doctor.png)
 
 ### Patient's Page
-![Screenshot 9](./screenshots/Screenshot%20%289%29.png)
+![Screenshot 9](./screenshots/patient.png)
 
 ### Book Appointment with Doctor
-![Screenshot 10](./screenshots/Screenshot%20%2810%29.png)
+![Screenshot 10](./screenshots/appointment.png)
 
 ### Community Support Panel
-![Screenshot 13](./screenshots/Screenshot%20%2813%29.png)
+![Screenshot 13](./screenshots/community.png)
 
 ### AI Chatbot
-![Screenshot 14](./screenshots/Screenshot%20%2814%29.png)
+![Screenshot 14](./screenshots/ai.png)
 
 ## ⚙️ Features
 
