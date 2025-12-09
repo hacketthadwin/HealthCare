@@ -64,6 +64,7 @@ A full-stack healthcare web application designed to bridge the gap between patie
 | Backend      | Node.js, Express.js       |
 | Authentication | JWT, bcrypt              |
 | Database     | MongoDB + Mongoose        |
+| Chat      | WebSockets (Socket.io) |
 | UI Components| react-calendar, react-toastify |
 | Hosting      | Render (Backend), Vercel (Frontend) |
 
