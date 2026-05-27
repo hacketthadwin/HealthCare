@@ -153,6 +153,15 @@ function DailyTaskCompletionChart() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="w-full h-[24rem] md:h-[32rem] flex flex-col items-center justify-center p-6 md:p-8 bg-rose-50 dark:bg-rose-900/10 backdrop-blur-md rounded-[2.5rem] md:rounded-[4rem] border-2 border-rose-500/20">
+        <Activity className="text-rose-500 mb-4" size={32} />
+        <p className="text-[10px] text-center font-black uppercase tracking-[0.2em] text-rose-600 dark:text-rose-300">{error.message || error || 'Failed to load chart data.'}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full p-6 md:p-10 h-[24rem] md:h-[32rem] bg-white dark:bg-[#1F3A4B]/20 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[4rem] border-2 border-[#1F3A4B]/5 dark:border-white/5 shadow-3xl flex flex-col overflow-hidden group transition-[background-color,border-color] duration-500 relative">
       <div className="absolute top-0 right-0 p-8 md:p-12 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform duration-1000 hidden sm:block">

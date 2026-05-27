@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import Skiper19 from './UIcomponents/BackgroundScrollStroke';
-import { useTheme } from '../context/ThemeContext';
+// import { useTheme } from '../context/ThemeContext';
 import Header1 from './UIcomponents/Header1';
 import Feature3 from './mvpblocks/feature-3';
 import Faq3 from './mvpblocks/faq-3';
 import Footer4Col from './mvpblocks/footer-4col';
 
 const HomePage = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
+  // const { isDarkMode, toggleTheme } = useTheme();
 
   const createStyledChart = (canvasRef, type, data, options) => {
     if (canvasRef.current) {
@@ -96,9 +96,10 @@ const HomePage = () => {
       }],
     };
     createStyledChart(chartLineCanvasRef, 'line', lineChartData);
+    const currentCanvas = chartLineCanvasRef.current;
 
     return () => {
-      chartLineCanvasRef.current?.chart?.destroy();
+      currentCanvas?.chart?.destroy();
     };
   }, []);
 
@@ -126,9 +127,10 @@ const HomePage = () => {
       }]
     };
     createStyledChart(chartBarCanvasRef, 'bar', barChartData);
+    const currentCanvas = chartBarCanvasRef.current;
 
     return () => {
-      chartBarCanvasRef.current?.chart?.destroy();
+      currentCanvas?.chart?.destroy();
     };
   }, []);
 

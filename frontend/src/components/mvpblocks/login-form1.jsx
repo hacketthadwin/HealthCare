@@ -21,7 +21,7 @@ export default function LoginForm1() {
             <p className="">
               Don't have an account?{" "}
               <a
-                href="#"
+                href="/signup"
                 className="font-medium text-rose-600 hover:text-rose-500">
                 Sign up
               </a>
@@ -126,7 +126,7 @@ export default function LoginForm1() {
           </form>
         </div>
         <div className="text-center">
-          <a href="#" className="hover:text-rose-600">
+          <a href="/forgot-password" className="hover:text-rose-600">
             Forgot password?
           </a>
         </div>

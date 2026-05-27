@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -24,17 +25,39 @@ const formatDateTime = (isoString) => {
 };
 
 function CurrentAppointments() {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments,setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef(null);
 
   const fetchAppointments = async () => {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      setError(new Error('Authentication required'));
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      // Logic for fetching remains identical to your backend integration
+
+      const response = await axios.get(
+        'https://healthcare-97r0.onrender.com/api/v1/appointments/patient-doctors',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const formattedAppointments = (response.data.data || []).map((app) => ({
+        id: app._id,
+        type: app.status === 'accepted' ? 'Accepted' : app.status === 'pending' ? 'Pending' : 'Rejected',
+        provider: app.doctorId?.name || 'Doctor',
+        dateTime: app.createdAt || app.updatedAt || new Date().toISOString(),
+        link: '',
+        reason: app.reason || '',
+      }));
+
+      setAppointments(formattedAppointments);
       setCurrentIndex(0);
     } catch (e) {
       console.error('Error fetching appointments:', e);

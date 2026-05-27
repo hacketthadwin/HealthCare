@@ -163,7 +163,7 @@ export default function Footer4Col() {
               <ul className="space-y-4 text-sm font-bold tracking-wide">
                 {contactInfo.map(({ icon: Icon, text, isAddress }) => (
                   <li key={text}>
-                    <a className="flex items-center justify-center gap-3 sm:justify-start group" href={isAddress ? "#" : text.includes("@") ? `mailto:${text}` : `tel:${text}`}>
+                    <a className="flex items-center justify-center gap-3 sm:justify-start group" href={isAddress ? `https://maps.google.com/search?q=${encodeURIComponent(text)}` : text.includes("@") ? `mailto:${text}` : `tel:${text}`} target={isAddress ? "_blank" : "_self"} rel={isAddress ? "noopener noreferrer" : undefined}>
                       <Icon className="text-[#1F3A4B] dark:text-[#C2F84F] w-5 h-5 shrink-0" />
                       <span className="text-[#1F3A4B]/70 dark:text-[#FAFDEE]/70 group-hover:text-[#1F3A4B] dark:group-hover:text-[#FAFDEE] transition-colors">{text}</span>
                     </a>

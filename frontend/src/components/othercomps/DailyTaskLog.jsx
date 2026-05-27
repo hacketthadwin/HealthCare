@@ -6,7 +6,7 @@ import { TaskProgressContext } from '../../context/TaskProgressContext';
 import axios from 'axios';
 import { 
   ChevronLeft, ChevronRight, CheckCircle2, Circle, 
-  ListChecks, CalendarDays, ClipboardX, Activity
+  ListChecks, CalendarDays, ClipboardX, Activity, AlertCircle
 } from 'lucide-react';
 
 const getAuthToken = () => localStorage.getItem('userToken');
@@ -226,6 +226,12 @@ function DailyTaskLog({ onTaskUpdate }) {
         <div className="h-64 flex flex-col items-center justify-center bg-white/40 dark:bg-[#1F3A4B]/10 rounded-[4rem] border-2 border-dashed border-[#1F3A4B]/10 animate-pulse">
           <Activity className="animate-spin text-[#1F3A4B] dark:text-[#C2F84F] mb-4" size={40} />
           <p className="text-xs font-black tracking-[0.3em] uppercase opacity-40 text-[#1F3A4B] dark:text-[#FAFDEE]">Synchronizing Log...</p>
+        </div>
+      ) : error ? (
+        <div className="h-64 flex flex-col items-center justify-center bg-rose-50 dark:bg-rose-900/10 rounded-[4rem] border-2 border-rose-500/20 shadow-xl shadow-rose-500/10 p-8 text-center">
+          <AlertCircle className="text-rose-500 mb-4" size={40} />
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-rose-600 dark:text-rose-300">{error}</p>
+          <p className="text-[10px] uppercase opacity-40 mt-2">Please refresh or try again later.</p>
         </div>
       ) : taskLogData.length === 0 ? (
         <div className="h-64 flex flex-col items-center justify-center bg-white/40 dark:bg-white/5 border-2 border-dashed border-[#1F3A4B]/10 rounded-[4rem] p-10 group">
