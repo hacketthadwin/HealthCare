@@ -1,261 +1,243 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, ArrowRight, Moon, Sun } from 'lucide-react';
+import { Menu, X, ArrowRight, Moon, Sun, LayoutDashboard } from 'lucide-react';
 
 const navItems = [
-  {
-    name: 'Products',
-    href: '/products',
-  },
   { name: 'Pricing', href: '/pricing' },
-  { name: 'About us', href: '/about' },
-   { name: 'Contact', href: '/contact' }
+  { name: 'About Us', href: '/about' },
+  { name: 'Contact', href: '/contact' }
 ];
 
 export default function Header1() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
   const [theme, setTheme] = useState('light');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [dashboardRoute, setDashboardRoute] = useState('/');
+  const location = useLocation();
+
+  // Detect login state from localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('userToken');
+    const role = localStorage.getItem('role');
+    if (token) {
+      setIsLoggedIn(true);
+      if (role === 'doctor') {
+        setDashboardRoute('/doctor');
+      } else if (role === 'patient') {
+        setDashboardRoute('/patient');
+      } else {
+        setDashboardRoute('/dashboard');
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [location]); // re-check on every route change
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(isDark ? 'dark' : 'light');
-    
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    const savedTheme = localStorage.getItem('theme') || (isDark ? 'dark' : 'light');
+    setTheme(savedTheme);
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  const headerVariants = {
-    initial: { y: -100, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    scrolled: {
-      backdropFilter: 'blur(20px)',
-      backgroundColor:
-        theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-    },
-  };
-
-  const mobileMenuVariants = {
-    closed: { opacity: 0, height: 0 },
-    open: { opacity: 1, height: 'auto' },
-  };
-
-  const dropdownVariants = {
-    hidden: { opacity: 0, y: -10, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1 },
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
   return (
-    <motion.header
-      className="fixed top-0 right-0 left-0 z-50 backdrop-blur-lg bg-white/25 dark:bg-gray-900/25 border-b border-transparent transition-all duration-300"
-      variants={headerVariants}
-      initial="initial"
-      animate="animate"
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      style={{
-        boxShadow: isScrolled ? '0 8px 32px rgba(0, 0, 0, 0.1)' : 'none',
-      }}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between lg:h-20">
-          <motion.div
-            className="flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-          >
-            <Link to="/" className="flex items-center space-x-2">
-              <span className="text-3xl font-bold text-[#476407] dark:text-[#C2F84F]">
-                HealthHub
-              </span>
-            </Link>
-          </motion.div>
+    <>
+      {/* Spacer — pushes content below the fixed header */}
+      <div className="h-16 sm:h-[72px] lg:h-20" />
 
-          <nav className="hidden items-center space-x-8 lg:flex">
-            {navItems.map((item) => (
-              <div
-                key={item.name}
-                className="relative"
-                onMouseEnter={() =>
-                  item.hasDropdown && setActiveDropdown(item.name)
-                }
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <Link
-                  to={item.href}
-                  className="flex items-center space-x-1 text-lg lg:text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-200 hover:text-[#C2F84F] dark:hover:text-[#476407]"
-                >
-                  <span>{item.name}</span>
-                  {item.hasDropdown && (
-                    <ChevronDown className="h-5 w-5 transition-transform duration-200" />
-                  )}
-                </Link>
+      <motion.header
+        className={`fixed top-0 left-0 right-0 z-50 border-b-2 transition-all duration-100 font-sans ${
+          isScrolled
+            ? 'bg-[#FAFDEE]/90 dark:bg-[#0a111a]/90 border-[#1F3A4B]/20 dark:border-white/20 backdrop-blur-md shadow-xl'
+            : 'bg-transparent border-transparent'
+        }`}
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+      >
+        <div className="mx-auto max-w-[1700px] px-4 sm:px-6 md:px-8 lg:px-10">
+          <div className="flex h-16 sm:h-[72px] lg:h-20 items-center justify-between">
 
-                {item.hasDropdown && (
-                  <AnimatePresence>
-                    {activeDropdown === item.name && (
-                      <motion.div
-                        className="absolute top-full left-0 mt-2 w-72 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl"
-                        variants={dropdownVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                        transition={{ duration: 0.2 }}
-                      >
-                        {item.dropdownItems?.map((dropdownItem) => (
-                          <Link
-                            key={dropdownItem.name}
-                            to={dropdownItem.href}
-                            className="block px-4 py-4 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                          >
-                            <div className="text-lg font-bold text-gray-900 dark:text-white">
-                              {dropdownItem.name}
-                            </div>
-                            {dropdownItem.description && (
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
-                                {dropdownItem.description}
-                              </div>
-                            )}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-              </div>
-            ))}
-          </nav>
-
-          <div className="hidden items-center space-x-4 lg:flex">
-            {/* Theme Toggle */}
-            <div className="relative inline-grid h-9 w-[4.5rem] grid-cols-[1fr_1fr] items-center text-sm font-medium overflow-hidden rounded-full border-2 border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800">
-              <button
-                onClick={toggleTheme}
-                className="absolute inset-0 w-full h-full"
-                aria-label="Toggle theme"
-              >
-                <span className={`absolute inset-y-0 left-0 z-10 h-full w-1/2 rounded-full bg-white dark:bg-gray-700 shadow-md transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${theme === 'dark' ? 'translate-x-full' : 'translate-x-0'}`} />
-              </button>
-              <span className={`pointer-events-none relative z-20 flex min-w-8 items-center justify-center text-center transition-opacity duration-300 ${theme === 'dark' ? 'opacity-50' : 'opacity-100'}`}>
-                <Sun aria-hidden="true" size={16} className="text-yellow-900 dark:text-yellow-400" />
-              </span>
-              <span className={`pointer-events-none relative z-20 flex min-w-8 items-center justify-center text-center transition-opacity duration-300 ${theme === 'dark' ? 'opacity-100' : 'opacity-50'}`}>
-                <Moon aria-hidden="true" size={16} className="text-gray-700 dark:text-gray-400" />
-              </span>
-            </div>
-            
-            <Link
-              to="/login"
-              className="font-medium text-gray-900 dark:text-white transition-colors duration-200 hover:text-[#476407] dark:hover:text-[#C2F84F]"
-            >
-              Sign In
-            </Link>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                to="/signup"
-                className="inline-flex items-center space-x-2 rounded-full bg-[#476407] dark:bg-[#C2F84F] px-6 py-2.5 font-medium text-white dark:text-black transition-all duration-200 hover:shadow-lg"
-              >
-                <span>Get Started</span>
-                <ArrowRight className="h-4 w-4" />
+            {/* LOGO */}
+            <div className="flex items-center shrink-0">
+              <Link to="/" className="group">
+                <span className="text-2xl sm:text-3xl md:text-[2rem] lg:text-4xl font-black italic tracking-tight uppercase text-[#1F3A4B] dark:text-[#FAFDEE] group-hover:text-emerald-500 dark:group-hover:text-[#C2F84F] transition-colors duration-200">
+                  HEALTH<span className="text-emerald-600 dark:text-[#C2F84F]">HUB</span>
+                </span>
               </Link>
-            </motion.div>
-          </div>
+            </div>
 
-          <div className="flex items-center space-x-3 lg:hidden">
-            {/* Mobile Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="rounded-lg p-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5 text-yellow-400" />
-              ) : (
-                <Moon className="h-5 w-5 text-gray-700" />
-              )}
-            </button>
-
-            {/* Mobile Menu Button */}
-            <motion.button
-              className="rounded-lg p-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </motion.button>
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              className="overflow-hidden lg:hidden"
-              variants={mobileMenuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <div className="mt-4 space-y-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 py-4 shadow-xl backdrop-blur-lg">
-                {navItems.map((item) => (
+            {/* DESKTOP NAV */}
+            <nav className="hidden lg:flex items-center space-x-6 lg:space-x-10 xl:space-x-16">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="block px-4 py-3 text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`relative py-1 text-sm md:text-base lg:text-lg xl:text-xl font-bold tracking-wide transition-all duration-200 ${
+                      isActive
+                        ? 'text-emerald-600 dark:text-[#C2F84F] opacity-100'
+                        : 'text-[#1F3A4B] dark:text-[#FAFDEE] opacity-75 hover:opacity-100 hover:text-emerald-600 dark:hover:text-[#C2F84F]'
+                    }`}
                   >
-                    {item.name}
+                    <span>{item.name}</span>
+                    {isActive && (
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        className="absolute bottom-0 left-0 right-0 h-[3px] bg-emerald-600 dark:bg-[#C2F84F] rounded-full origin-left"
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                      />
+                    )}
                   </Link>
-                ))}
-                <div className="space-y-2 px-4 py-2">
+                );
+              })}
+            </nav>
+
+            {/* DESKTOP ACTIONS */}
+            <div className="hidden lg:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
+              {/* THEME TOGGLE */}
+              <div
+                className="relative flex h-9 w-[72px] lg:h-10 lg:w-20 items-center rounded-full border-2 border-[#1F3A4B] dark:border-[#C2F84F] bg-white dark:bg-black cursor-pointer shadow-lg shrink-0"
+                onClick={toggleTheme}
+              >
+                <div className={`absolute top-1/2 left-1 h-6 w-6 lg:h-7 lg:w-7 -translate-y-1/2 rounded-full bg-[#1F3A4B] dark:bg-[#C2F84F] transition-transform duration-300 ${theme === 'dark' ? 'translate-x-8 lg:translate-x-10' : 'translate-x-0'}`} />
+                <span className="relative z-10 flex flex-1 items-center justify-center">
+                  <Sun size={14} className={theme === 'light' ? 'text-[#C2F84F]' : 'text-gray-500'} />
+                </span>
+                <span className="relative z-10 flex flex-1 items-center justify-center">
+                  <Moon size={14} className={theme === 'dark' ? 'text-[#1F3A4B]' : 'text-gray-500'} />
+                </span>
+              </div>
+
+              {/* LOGGED IN: Dashboard button only */}
+              {isLoggedIn ? (
+                <Link
+                  to={dashboardRoute}
+                  className="inline-flex items-center space-x-2 rounded-xl lg:rounded-2xl bg-[#1F3A4B] dark:bg-[#C2F84F] px-5 lg:px-7 py-2.5 lg:py-3.5 text-sm lg:text-base font-black uppercase tracking-wider text-white dark:text-[#1F3A4B] border border-transparent dark:border-black/10 hover:scale-105 active:scale-95 transition-all shadow-md whitespace-nowrap"
+                >
+                  <LayoutDashboard className="h-4 w-4 stroke-[2.5]" />
+                  <span>Dashboard</span>
+                </Link>
+              ) : (
+                /* NOT LOGGED IN: Sign In + Get Started */
+                <>
                   <Link
                     to="/login"
-                    className="block w-full rounded-lg py-2.5 text-center font-medium text-gray-900 dark:text-white transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-sm lg:text-base font-black tracking-wider uppercase text-[#1F3A4B] dark:text-[#FAFDEE] hover:text-emerald-600 dark:hover:text-[#C2F84F] transition-colors duration-200 whitespace-nowrap"
                   >
-                    Sign In
+                    SIGN IN
                   </Link>
                   <Link
                     to="/signup"
-                    className="block w-full rounded-lg bg-[#476407] dark:bg-[#C2F84F] py-2.5 text-center font-medium text-white dark:text-black transition-all duration-200 hover:shadow-lg"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="inline-flex items-center space-x-2 rounded-xl lg:rounded-2xl bg-[#1F3A4B] dark:bg-[#C2F84F] px-5 lg:px-7 py-2.5 lg:py-3.5 text-sm lg:text-base font-black uppercase tracking-wider text-white dark:text-[#1F3A4B] border border-transparent dark:border-black/10 hover:scale-105 active:scale-95 transition-all shadow-md whitespace-nowrap"
                   >
-                    Get Started
+                    <span>GET STARTED</span>
+                    <ArrowRight className="h-4 w-4 stroke-[3]" />
                   </Link>
+                </>
+              )}
+            </div>
+
+            {/* MOBILE + TABLET ACTIONS */}
+            <div className="flex lg:hidden items-center space-x-3">
+              <button
+                onClick={toggleTheme}
+                className="p-2.5 rounded-xl bg-white dark:bg-black border-2 border-[#1F3A4B] dark:border-[#C2F84F] text-[#1F3A4B] dark:text-[#C2F84F]"
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+              <button
+                className="p-2.5 rounded-xl bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] shadow-md"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5 stroke-[2.5]" /> : <Menu className="h-5 w-5 stroke-[2.5]" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* MOBILE + TABLET MENU */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              className="fixed top-16 sm:top-[72px] left-0 right-0 h-screen lg:hidden z-40"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="absolute inset-0 bg-[#FAFDEE] dark:bg-[#0a111a] backdrop-blur-xl border-t-2 border-[#1F3A4B]/10 dark:border-white/10" />
+              <div className="relative z-10 p-5 sm:p-6 flex flex-col space-y-4">
+                {navItems.map((item) => {
+                  const isActive = location.pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`block py-3 sm:py-4 px-5 sm:px-6 rounded-xl sm:rounded-2xl border transition-all text-xl sm:text-2xl font-bold tracking-tight ${
+                        isActive
+                          ? 'bg-[#1F3A4B] text-[#C2F84F] dark:bg-[#C2F84F] dark:text-[#1F3A4B] border-transparent'
+                          : 'bg-transparent border-[#1F3A4B]/10 dark:border-white/10 text-[#1F3A4B] dark:text-[#FAFDEE] hover:bg-[#1F3A4B]/5 dark:hover:bg-white/10'
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
+
+                <div className="pt-4 grid grid-cols-1 gap-4">
+                  {isLoggedIn ? (
+                    <Link
+                      to={dashboardRoute}
+                      className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1F3A4B] dark:bg-[#C2F84F] flex items-center justify-center gap-2 text-sm sm:text-base font-black uppercase tracking-widest text-white dark:text-[#1F3A4B]"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      DASHBOARD
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="w-full py-3.5 rounded-xl sm:rounded-2xl border-2 border-[#1F3A4B] dark:border-[#C2F84F] text-center text-sm sm:text-base font-black uppercase tracking-widest text-[#1F3A4B] dark:text-[#C2F84F]"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        SIGN IN
+                      </Link>
+                      <Link
+                        to="/signup"
+                        className="w-full py-3.5 rounded-xl sm:rounded-2xl bg-[#1F3A4B] dark:bg-[#C2F84F] text-center text-sm sm:text-base font-black uppercase tracking-widest text-white dark:text-[#1F3A4B]"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        GET STARTED
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </motion.header>
+      </motion.header>
+    </>
   );
 }

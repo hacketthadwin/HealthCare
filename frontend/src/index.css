@@ -181,3 +181,17 @@ code {
     --sparkle-color: #C2F84F; /* Your Dark mode color */
   }
 }
+
+/* Force high-performance rendering across complex layout sections */
+canvas, 
+.bg-white\/5, 
+header {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Forces GPU Layering */
+}
+
+/* Eliminate heavy repaint drag on smooth scroll implementations */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Smooth momentum scrolling for iOS */
+}

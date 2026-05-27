@@ -5,13 +5,14 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 import { 
   LogOut, MessageSquare, Users, 
-  Send, ChevronRight, X, Plus, User, Orbit, Stethoscope, Sun, Moon, Heart, ShieldCheck
+  Send, ChevronRight, X, Plus, User, Stethoscope, Heart 
 } from 'lucide-react';
 
 import DailyTaskCompletionChart from './othercomps/DailyTaskCompletionChart';
 import DailyTaskLog from './othercomps/DailyTaskLog';
 import CurrentAppointments from './othercomps/CurrentAppointments';
 import AIChatButton from './othercomps/AIChatButton';
+import Header1 from './UIcomponents/Header1';
 
 const socket = io('https://healthcare-97r0.onrender.com');
 
@@ -21,26 +22,11 @@ const PatientPage = () => {
     const [userId, setUserId] = useState(null);
     const [userName, setUserName] = useState("User");
     const [refreshChartKey, setRefreshChartKey] = useState(0);
-    const [chatView, setChatView] = useState('closed'); 
+    const [chatView, setChatView] = useState('closed');
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const [doctors, setDoctors] = useState([]);
-    const [theme, setTheme] = useState('light');
-
-    useEffect(() => {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const savedTheme = localStorage.getItem('theme') || (isDark ? 'dark' : 'light');
-        setTheme(savedTheme);
-        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    }, []);
-
-    const toggleTheme = () => {
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    };
 
     const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     useEffect(() => { scrollToBottom(); }, [messages]);
@@ -108,6 +94,7 @@ const PatientPage = () => {
     const handleLogout = () => {
         localStorage.removeItem('userToken');
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('role');
         window.location.href = '/login';
     };
 
@@ -137,14 +124,17 @@ const PatientPage = () => {
         setRefreshChartKey(prevKey => prevKey + 1);
     }, []);
 
-return (
+    return (
         <div className="min-h-screen bg-[#FAFDEE] dark:bg-[#0a111a] transition-all duration-500 text-[#1F3A4B] dark:text-[#FAFDEE] font-sans overflow-x-hidden">
+            <Header1 />
+
             {/* Background Blobs */}
             <div className="fixed inset-0 pointer-events-none opacity-40 dark:opacity-20">
                 <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%] bg-[#C2F84F] rounded-full blur-[140px] dark:blur-[120px]" />
                 <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-cyan-400 rounded-full blur-[140px] dark:blur-[100px]" />
             </div>
 
+            {/* PAGE HEADER — no theme toggle, just avatar + logout */}
             <header className="relative z-10 p-4 md:p-10 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto">
                     <div className="p-1 rounded-full bg-gradient-to-tr from-[#1F3A4B] to-[#C2F84F] shrink-0">
@@ -163,19 +153,12 @@ return (
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-between md:justify-end">
-                    <div className="relative flex h-10 w-20 md:h-12 md:w-[5.5rem] items-center rounded-full border border-[#1F3A4B]/10 bg-white/50 dark:bg-gray-800 backdrop-blur-xl overflow-hidden cursor-pointer" onClick={toggleTheme}>
-                        <div className={`absolute h-8 w-[2rem] md:h-9 md:w-[2.4rem] rounded-full bg-[#1F3A4B] dark:bg-[#C2F84F] transition-all duration-300 ${theme === 'dark' ? 'translate-x-[2.7rem] md:translate-x-[2.7rem]' : 'translate-x-1'}`} />
-                        <span className="relative z-10 flex-1 flex items-center justify-center"><Sun size={14} className={theme === 'light' ? 'text-white' : 'text-gray-400'} /></span>
-                        <span className="relative z-10 flex-1 flex items-center justify-center"><Moon size={14} className={theme === 'dark' ? 'text-[#1F3A4B]' : 'text-gray-400'} /></span>
-                    </div>
-
+                <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-end">
                     <div className="bg-[#1F3A4B]/5 dark:bg-white/10 p-2 px-4 rounded-2xl hidden sm:block">
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Status</p>
                         <p className="text-xs font-black italic">ONLINE</p>
                     </div>
-                    
-                    <button onClick={handleLogout} className="p-4 rounded-full bg-rose-600 shadow-lg text-white">
+                    <button onClick={handleLogout} className="p-4 rounded-full bg-rose-600 shadow-lg text-white hover:scale-105 active:scale-95 transition-all">
                         <LogOut size={20} />
                     </button>
                 </div>
@@ -186,12 +169,12 @@ return (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
                         <div className="p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] bg-[#1F3A4B] text-[#FAFDEE] shadow-2xl relative overflow-hidden group">
                            <Stethoscope className="absolute right-[-10px] bottom-[-10px] opacity-10 scale-150" size={100}/>
-                           <p className="text-[10px] font-black uppercase text-[#C2F84F] mb-2 tracking-widest">Compliance</p>
+                           <p className="text-[10px] font-black uppercase text-[#C2F84F] mb-2 tracking-widest">Progress</p>
                            <h3 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">On Track</h3>
                         </div>
                         <div className="p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] bg-white dark:bg-white/5 border-2 border-[#1F3A4B]/10 dark:border-white/10 shadow-xl relative group">
                            <Users size={30} className="text-[#1F3A4B] dark:text-[#C2F84F] mb-4" />
-                           <p className="text-[10px] font-black uppercase opacity-40 text-[#1F3A4B] dark:text-[#FAFDEE] tracking-widest">Specialists</p>
+                           <p className="text-[10px] font-black uppercase opacity-40 text-[#1F3A4B] dark:text-[#FAFDEE] tracking-widest">My Doctors</p>
                            <h3 className="text-4xl md:text-6xl font-black italic uppercase leading-none mt-2">{doctors.length}</h3>
                         </div>
                     </div>
@@ -208,7 +191,7 @@ return (
                     <div className="bg-white dark:bg-white/5 rounded-[2.5rem] md:rounded-[4rem] p-6 md:p-12 border border-[#1F3A4B]/10 shadow-3xl overflow-hidden relative">
                          <div className="relative z-10">
                             <div className="flex justify-between items-center mb-6 md:mb-10">
-                                <h2 className="text-2xl md:text-4xl font-black tracking-tighter italic text-[#1F3A4B] dark:text-[#FAFDEE]">UPCOMING VISITS</h2>
+                                <h2 className="text-2xl md:text-4xl font-black tracking-tighter italic text-[#1F3A4B] dark:text-[#FAFDEE]">UPCOMING APPOINTMENTS</h2>
                                 <Link to="/book-appointment" className="h-10 w-10 md:h-14 md:w-14 bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] rounded-full flex items-center justify-center hover:scale-110 transition-all shadow-xl">
                                     <Plus size={24}/>
                                 </Link>
@@ -223,8 +206,8 @@ return (
                 <div className="lg:col-span-4 space-y-6 md:space-y-8">
                     <Link to="/community-support" className="w-full py-8 md:py-12 px-6 md:px-10 rounded-[2.5rem] md:rounded-[4rem] bg-gradient-to-br from-[#1F3A4B] to-[#254d63] text-white flex justify-between items-center transition-all shadow-2xl border-2 border-transparent hover:border-[#C2F84F]">
                         <div className="text-left relative z-10">
-                            <h2 className="text-2xl md:text-4xl font-black italic uppercase">Peer Hub</h2>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#C2F84F] mt-1">Connect Globally</p>
+                            <h2 className="text-2xl md:text-4xl font-black italic uppercase">Community Support</h2>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[#C2F84F] mt-1">Connect with others</p>
                         </div>
                         <ChevronRight size={24} />
                     </Link>
@@ -234,21 +217,21 @@ return (
                              <MessageSquare size={36} />
                          </div>
                          <div>
-                            <h2 className="text-xl md:text-2xl font-black italic text-[#1F3A4B] dark:text-[#FAFDEE]">STAFF INTERCOM</h2>
-                            <p className="text-[10px] font-black tracking-widest opacity-40 uppercase">Direct Channel ({doctors.length})</p>
+                            <h2 className="text-xl md:text-2xl font-black italic text-[#1F3A4B] dark:text-[#FAFDEE]">CHAT WITH DOCTORS</h2>
+                            <p className="text-[10px] font-black tracking-widest opacity-40 uppercase">Direct Message ({doctors.length})</p>
                          </div>
                     </div>
                 </div>
             </main>
 
-            {/* RESPONSIVE CHAT OVERLAY */}
+            {/* CHAT OVERLAY */}
             <div className={`fixed top-0 right-0 h-full w-full sm:w-[480px] md:w-[540px] z-[100] transition-all duration-500 will-change-transform ${chatView === 'closed' ? 'translate-x-full invisible' : 'translate-x-0 visible'}`}>
                  <div className="absolute inset-0 bg-white dark:bg-[#0d131b] border-l-4 border-[#1F3A4B] shadow-2xl backdrop-blur-2xl" />
                  <div className="h-full w-full p-6 md:p-8 flex flex-col relative z-10 text-[#1F3A4B] dark:text-[#FAFDEE]">
                     <div className="flex justify-between items-center mb-6 md:mb-10">
                         <div className="flex items-center gap-4">
                             <span className="p-2 md:p-3 bg-[#1F3A4B] dark:bg-[#C2F84F] text-[#C2F84F] dark:text-[#1F3A4B] rounded-2xl"><Heart size={20}/></span>
-                            <h2 className="text-lg md:text-2xl font-black italic">Physician Intercom</h2>
+                            <h2 className="text-lg md:text-2xl font-black italic">Messages</h2>
                         </div>
                         <button onClick={() => setChatView('closed')} className="p-2 bg-[#1F3A4B]/5 hover:bg-rose-600 hover:text-white transition-all rounded-full"><X size={24}/></button>
                     </div>
@@ -256,22 +239,22 @@ return (
                     <div className="flex-1 overflow-hidden flex flex-col">
                          {chatView === 'doctorList' ? (
                             <div className="space-y-4 pt-4 overflow-y-auto pr-1">
-                                <p className="text-[10px] font-black uppercase text-[#1F3A4B] dark:text-[#C2F84F] tracking-widest mb-4">On Duty Specialists</p>
+                                <p className="text-[10px] font-black uppercase text-[#1F3A4B] dark:text-[#C2F84F] tracking-widest mb-4">Your Available Doctors</p>
                                 {doctors.map(dr => (
                                     <button key={dr.id} onClick={() => handleSelectDoctor(dr)} className="w-full p-6 rounded-[1.5rem] bg-[#1F3A4B]/5 dark:bg-white/5 border border-[#1F3A4B]/10 flex justify-between items-center hover:bg-[#1F3A4B] hover:text-[#C2F84F] transition-all">
                                         <div className="text-left">
-                                            <p className="text-[8px] opacity-40 font-black uppercase tracking-widest">Attending</p>
+                                            <p className="text-[8px] opacity-40 font-black uppercase tracking-widest">Doctor</p>
                                             <span className="text-lg font-black italic">{dr.name}</span>
                                         </div>
                                         <ChevronRight size={20}/>
                                     </button>
                                 ))}
-                                {doctors.length === 0 && <p className="text-center italic opacity-40 mt-10">No specialists assigned yet.</p>}
+                                {doctors.length === 0 && <p className="text-center italic opacity-40 mt-10">No doctors assigned yet.</p>}
                             </div>
                          ) : (
                             <div className="flex-1 flex flex-col h-full overflow-hidden px-1">
                                 <button onClick={() => setChatView('doctorList')} className="w-fit mb-4 text-[10px] font-black uppercase text-[#1F3A4B] dark:text-[#C2F84F] border-b border-current pb-1 flex items-center gap-2">
-                                    <ChevronRight size={12} className="rotate-180"/> Return to List
+                                    <ChevronRight size={12} className="rotate-180"/> Back to list
                                 </button>
                                 <div className="flex-1 overflow-y-auto pr-2 space-y-4 scrollbar-hide">
                                     {messages.map((m, i) => (
@@ -284,8 +267,8 @@ return (
                                     <div ref={chatEndRef} />
                                 </div>
                                 <form onSubmit={handleSendMessage} className="mt-6 bg-[#1F3A4B]/5 dark:bg-white/5 p-1 rounded-full border border-[#1F3A4B]/20 flex">
-                                    <input value={inputMessage} onChange={(e)=>setInputMessage(e.target.value)} className="flex-1 bg-transparent px-4 py-3 outline-none font-bold text-xs" placeholder="Query clinical staff..." />
-                                    <button className="h-10 w-10 rounded-full bg-[#1F3A4B] dark:bg-[#C2F84F] text-[#C2F84F] dark:text-[#1F3A4B] flex items-center justify-center transition-all"><Send size={16}/></button>
+                                    <input value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} className="flex-1 bg-transparent px-4 py-3 outline-none font-bold text-xs" placeholder="Type a message..." />
+                                    <button type="submit" className="h-10 w-10 rounded-full bg-[#1F3A4B] dark:bg-[#C2F84F] text-[#C2F84F] dark:text-[#1F3A4B] flex items-center justify-center transition-all"><Send size={16}/></button>
                                 </form>
                             </div>
                          )}
@@ -293,7 +276,7 @@ return (
                  </div>
             </div>
 
-            <AIChatButton />
+            {chatView === 'closed' && <AIChatButton />}
         </div>
     );
 };

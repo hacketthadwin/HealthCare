@@ -1,199 +1,129 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import { Eye, EyeOff, Home } from "lucide-react";
+import { Home, ArrowRight } from 'lucide-react';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "", email: "", password: "", confirmPassword: "", role: ""
+  });
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const onEachChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'username') setUsername(value);
-    if (name === 'email') setEmail(value);
-    if (name === 'password') setPassword(value);
-    if (name === 'confirmPassword') setConfirmPassword(value);
-    if (name === 'role') setRole(value);
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
 
     setLoading(true);
-
     axios.post("https://healthcare-97r0.onrender.com/api/v1/signup", {
-      email,
-      password,
-      name: username,
-      role
+      email: formData.email,
+      password: formData.password,
+      name: formData.username,
+      role: formData.role
     })
       .then(response => {
         if (response.data.success) {
           toast.success("Signup successful!");
-          setTimeout(() => navigate('/'), 1500);
+          setTimeout(() => navigate('/login'), 1500);
         } else {
           toast.error(response.data.message || "Signup failed!");
         }
       })
       .catch(error => {
-        console.error(error);
         toast.error(error.response?.data?.message || "Signup failed!");
       })
       .finally(() => setLoading(false));
   };
 
   return (
-    <main className="bg-transparent flex h-screen w-full flex-col items-center justify-center py-12 px-4 relative">
+    <main className="min-h-screen w-full flex flex-col items-center justify-center pt-24 md:pt-0 pb-12 px-6 bg-[#FAFDEE] dark:bg-[#0a111a] transition-colors duration-300 font-sans relative overflow-x-hidden">
       
-      {/* Floating Home Link */}
-            <Link 
-        to="/"
-        className="absolute top-8 left-8 group"
-      >
-        {/* Pulsing Background Aura */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-[#C2F84F] to-[#1F3A4B] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-        
-        <div className="relative flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/20 bg-[#1F3A4B] dark:bg-[#FAFDEE] text-[#FAFDEE] dark:text-[#1F3A4B] font-black uppercase text-xs tracking-[0.2em] shadow-2xl transition-all duration-300 group-hover:scale-110 group-active:scale-95 group-hover:shadow-[#C2F84F]/40">
-          <Home size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:text-[#5f8707]" />
-          <span>Home</span>
-          
-          {/* Subtle Shine Gradient */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      {/* Background Blobs */}
+      <div className="fixed inset-0 pointer-events-none opacity-40 dark:opacity-20 z-0">
+        <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%] bg-[#C2F84F] rounded-full blur-[140px]" />
+        <div className="absolute bottom-[-5%] right-[-5%] w-[35%] h-[35%] bg-cyan-400 rounded-full blur-[140px]" />
+      </div>
+
+      {/* Professional Home Button */}
+      <Link to="/" className="absolute top-8 left-8 z-20 group">
+        <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl border border-[#1F3A4B]/20 dark:border-white/10 bg-white/50 dark:bg-[#1F3A4B]/20 backdrop-blur-md text-[#1F3A4B] dark:text-[#FAFDEE] font-bold text-sm tracking-widest transition-all hover:border-[#1F3A4B] dark:hover:border-[#C2F84F] hover:shadow-lg">
+          <Home size={16} />
+          <span>BACK HOME</span>
         </div>
       </Link>
 
-      <div className="w-full space-y-4 sm:max-w-md">
-        <div className="text-center">
-          {/* <img
-            src="https://i.postimg.cc/j5dW4vFd/Mvpblocks.webp"
-            alt="Logo"
-            width={80}
-            className="mx-auto"
-          /> */}
-          <div className="mt-5 space-y-2">
-            <h1 className="text-3xl font-extrabold tracking-tight text-[#1F3A4B] dark:text-[#FAFDEE]">
-              SIGNUP
-            </h1>
-            <p className="text-[#1F3A4B]/70 dark:text-[#FAFDEE]/70 font-medium">
-              Create your account to get started.
-            </p>
-          </div>
-        </div>
-
-        <form 
-          onSubmit={onSubmit} 
-          className="bg-[#C2F84F]/40 dark:bg-[#476407]/40 backdrop-blur-md space-y-5 p-6 shadow-2xl border-2 border-[#1F3A4B]/10 dark:border-[#FAFDEE]/10 rounded-2xl"
-        >
-          {/* Inputs kept exactly as your design requirements */}
-          <div>
-            <label className="font-bold text-[#1F3A4B] dark:text-[#FAFDEE] ml-1">Your Name</label>
-            <input
-              name="username"
-              type="text"
-              placeholder="Enter your name"
-              value={username}
-              onChange={onEachChange}
-              required
-              className="mt-1 w-full rounded-xl border-2 border-[#1F3A4B]/10 bg-white/50 dark:bg-black/20 px-4 py-3 text-[#1F3A4B] dark:text-[#FAFDEE] font-semibold outline-none focus:border-[#1F3A4B] dark:focus:border-[#C2F84F] transition-all placeholder-[#1F3A4B]/40 dark:placeholder-[#FAFDEE]/40"
-            />
-          </div>
-
-          <div>
-            <label className="font-bold text-[#1F3A4B] dark:text-[#FAFDEE] ml-1">Email</label>
-            <input
-              name="email"
-              type="email"
-              placeholder="email@example.com"
-              value={email}
-              onChange={onEachChange}
-              required
-              className="mt-1 w-full rounded-xl border-2 border-[#1F3A4B]/10 bg-white/50 dark:bg-black/20 px-4 py-3 text-[#1F3A4B] dark:text-[#FAFDEE] font-semibold outline-none focus:border-[#1F3A4B] dark:focus:border-[#C2F84F] transition-all placeholder-[#1F3A4B]/40 dark:placeholder-[#FAFDEE]/40"
-            />
-          </div>
-
-          <div>
-            <label className="font-bold text-[#1F3A4B] dark:text-[#FAFDEE] ml-1">Password</label>
-            <div className="relative mt-1">
-              <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={onEachChange}
-                required
-                className="w-full rounded-xl border-2 border-[#1F3A4B]/10 bg-white/50 dark:bg-black/20 px-4 py-3 text-[#1F3A4B] dark:text-[#FAFDEE] font-semibold outline-none focus:border-[#1F3A4B] dark:focus:border-[#C2F84F] transition-all placeholder-[#1F3A4B]/40 dark:placeholder-[#FAFDEE]/40"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-[#1F3A4B] dark:text-[#FAFDEE]"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label className="font-bold text-[#1F3A4B] dark:text-[#FAFDEE] ml-1">Confirm Password</label>
-            <input
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={onEachChange}
-              required
-              className="mt-1 w-full rounded-xl border-2 border-[#1F3A4B]/10 bg-white/50 dark:bg-black/20 px-4 py-3 text-[#1F3A4B] dark:text-[#FAFDEE] font-semibold outline-none focus:border-[#1F3A4B] dark:focus:border-[#C2F84F] transition-all placeholder-[#1F3A4B]/40 dark:placeholder-[#FAFDEE]/40"
-            />
-          </div>
-
-          <div className="pt-2">
-            <span className="font-bold text-[#1F3A4B] dark:text-[#FAFDEE] ml-1 block mb-2 text-center">I am a...</span>
-            <div className="flex justify-center gap-6">
-              <label className="flex items-center space-x-2 text-[#1F3A4B] dark:text-[#FAFDEE] font-bold cursor-pointer">
-                <input type="radio" name="role" value="Doctor" onChange={onEachChange} required className="accent-[#1F3A4B] dark:accent-[#C2F84F] h-4 w-4" />
-                <span>Doctor</span>
-              </label>
-              <label className="flex items-center space-x-2 text-[#1F3A4B] dark:text-[#FAFDEE] font-bold cursor-pointer">
-                <input type="radio" name="role" value="Patient" onChange={onEachChange} required className="accent-[#1F3A4B] dark:accent-[#C2F84F] h-4 w-4" />
-                <span>Patient</span>
-              </label>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-full bg-[#1F3A4B] dark:bg-[#C2F84F] px-4 py-4 font-extrabold text-[#FAFDEE] dark:text-[#1F3A4B] uppercase tracking-widest duration-200 hover:scale-[1.03] active:scale-[0.97] disabled:opacity-50 shadow-lg"
-          >
-            {loading ? "Verifying..." : "Sign Up"}
-          </button>
-        </form>
-
-        <div className="text-center pt-2">
-          <p className="text-sm font-bold text-[#1F3A4B]/60 dark:text-[#FAFDEE]/60">
-            Already have an account?{" "}
-            {/* Link component replacement for consistency */}
-            <Link 
-              to="/login" 
-              className="text-rose-600 hover:text-rose-500 underline decoration-2 underline-offset-4 transition-colors"
-            >
-              Login
-            </Link>
+      {/* Content Wrapper */}
+      <div className="w-full max-w-lg relative z-10">
+        <div className="text-center mb-6 md:mb-10">
+          <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase text-[#1F3A4B] dark:text-[#FAFDEE] mb-3">
+            Sign Up
+          </h1>
+          <p className="text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 font-medium tracking-wide text-base">
+            Create your HealthHub account
           </p>
         </div>
+        
+        <form 
+          onSubmit={onSubmit} 
+          className="bg-white dark:bg-[#111827] p-6 md:p-10 rounded-[2.5rem] border border-[#1F3A4B]/10 shadow-2xl backdrop-blur-lg"
+        >
+          <div className="space-y-4 md:space-y-6">
+            <div>
+              <label className="block font-semibold text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 uppercase tracking-widest text-[10px] md:text-sm mb-1 md:mb-2 ml-1">Full Name</label>
+              <input name="username" type="text" placeholder="Enter your name" onChange={onChange} required className="w-full rounded-2xl border border-[#1F3A4B]/10 bg-[#1F3A4B]/5 dark:bg-white/5 px-4 md:px-5 py-3 md:py-4 text-[#1F3A4B] dark:text-[#FAFDEE] font-medium text-sm md:text-base outline-none focus:border-[#C2F84F] transition-all" />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 uppercase tracking-widest text-[10px] md:text-sm mb-1 md:mb-2 ml-1">Email</label>
+              <input name="email" type="email" placeholder="Enter your email" onChange={onChange} required className="w-full rounded-2xl border border-[#1F3A4B]/10 bg-[#1F3A4B]/5 dark:bg-white/5 px-4 md:px-5 py-3 md:py-4 text-[#1F3A4B] dark:text-[#FAFDEE] font-medium text-sm md:text-base outline-none focus:border-[#C2F84F] transition-all" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
+              <div>
+                <label className="block font-semibold text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 uppercase tracking-widest text-[10px] md:text-sm mb-1 md:mb-2 ml-1">Password</label>
+                <input name="password" type="password" placeholder="••••••••" onChange={onChange} required className="w-full rounded-2xl border border-[#1F3A4B]/10 bg-[#1F3A4B]/5 dark:bg-white/5 px-4 md:px-5 py-3 md:py-4 text-[#1F3A4B] dark:text-[#FAFDEE] font-medium text-sm md:text-base outline-none focus:border-[#C2F84F] transition-all" />
+              </div>
+              <div>
+                <label className="block font-semibold text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 uppercase tracking-widest text-[10px] md:text-sm mb-1 md:mb-2 ml-1">Confirm</label>
+                <input name="confirmPassword" type="password" placeholder="••••••••" onChange={onChange} required className="w-full rounded-2xl border border-[#1F3A4B]/10 bg-[#1F3A4B]/5 dark:bg-white/5 px-4 md:px-5 py-3 md:py-4 text-[#1F3A4B] dark:text-[#FAFDEE] font-medium text-sm md:text-base outline-none focus:border-[#C2F84F] transition-all" />
+              </div>
+            </div>
+
+            <div>
+              <span className="block font-semibold text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 uppercase tracking-widest text-[10px] md:text-sm mb-2 text-center">I am a...</span>
+              <div className="flex justify-center gap-6 md:gap-8">
+                {['Doctor', 'Patient'].map((r) => (
+                  <label key={r} className="flex items-center gap-2 cursor-pointer font-bold text-sm md:text-lg">
+                    <input type="radio" name="role" value={r} onChange={onChange} required className="h-4 w-4 md:h-5 md:w-5 accent-[#1F3A4B] dark:accent-[#C2F84F]" />
+                    {r}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} className="w-full rounded-2xl bg-[#1F3A4B] dark:bg-[#C2F84F] py-4 md:py-5 font-bold text-white dark:text-[#1F3A4B] uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-lg text-sm md:text-lg flex items-center justify-center gap-2">
+              {loading ? "PROCESSING..." : "SIGN UP"}
+              {!loading && <ArrowRight size={18} />}
+            </button>
+          </div>
+        </form>
+
+        <p className="text-center mt-6 md:mt-8 font-medium text-[#1F3A4B]/90 dark:text-[#FAFDEE]/90 tracking-wide text-sm">
+          Already have an account?{" "}
+          <Link to="/login" className="text-[#1F3A4B] dark:text-[#C2F84F] font-bold underline decoration-2 underline-offset-4 hover:opacity-70">
+            Login
+          </Link>
+        </p>
       </div>
 
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
