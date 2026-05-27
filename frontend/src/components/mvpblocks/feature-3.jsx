@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Building2,
   Lightbulb,
@@ -13,20 +12,20 @@ const leftFeatures = [
   {
     icon: Building2,
     title: "Verified Doctors",
-    description: "CONNECT ONLY WITH CERTIFIED HEALTHCARE PROFESSIONALS AVAILABLE FOR DIRECT CONSULTATIONS.",
-    cornerStyle: "sm:translate-x-2 sm:rounded-br-[2px]",
+    description: "Connect only with certified healthcare professionals available for consultations.",
+    cornerStyle: "sm:translate-x-4 sm:rounded-br-[2px]",
   },
   {
     icon: User2,
     title: "Patient Support Rooms",
-    description: "JOIN SECURE CHAT SPACES TO DISCUSS SYMPTOMS, ASK QUESTIONS, AND GET ADVICE SAFELY.",
-    cornerStyle: "sm:-translate-x-2 sm:rounded-br-[2px]",
+    description: "Join community spaces to discuss symptoms, ask doubts, and get guidance safely.",
+    cornerStyle: "sm:-translate-x-4 sm:rounded-br-[2px]",
   },
   {
     icon: Trophy,
     title: "Health Insights",
-    description: "GET REAL-TIME ADVICE AND CLEAR DATA REVIEWS ON VISITS, TASKS, AND MEDICAL RECORDS.",
-    cornerStyle: "sm:translate-x-2 sm:rounded-tr-[2px]",
+    description: "Get personalized analytics on appointments, symptoms, and medical patterns.",
+    cornerStyle: "sm:translate-x-4 sm:rounded-tr-[2px]",
   },
 ];
 
@@ -34,22 +33,23 @@ const rightFeatures = [
   {
     icon: ScreenShare,
     title: "Live Consultations",
-    description: "TALK WITH ASSIGNED DOCTORS IN REAL TIME THROUGH FAST LIVE MESSAGING CHANNELS.",
-    cornerStyle: "sm:-translate-x-2 sm:rounded-bl-[2px]",
+    description: "Interact with your doctor in real time through chat for quicker, clearer medical help.",
+    cornerStyle: "sm:-translate-x-4 sm:rounded-bl-[2px]",
   },
   {
     icon: User,
     title: "Smart Appointment System",
-    description: "BOOK, TRACK, AND MANAGE YOUR CLINIC APPOINTMENTS WITH INSTANT SLOT ACCEPTANCE.",
-    cornerStyle: "sm:translate-x-2 sm:rounded-bl-[2px]",
+    description: "Book, manage, and track doctor appointments with instant confirmations.",
+    cornerStyle: "sm:translate-x-4 sm:rounded-bl-[2px]",
   },
   {
     icon: Lightbulb,
     title: "AI Health Assistant",
-    description: "ASK HEALTH QUESTIONS AND RECEIVE AUTOMATIC SMART HELP ANYTIME.",
-    cornerStyle: "sm:-translate-x-2 sm:rounded-tl-[2px]",
+    description: "Ask health-related questions and receive AI-powered guidance anytime.",
+    cornerStyle: "sm:-translate-x-4 sm:rounded-tl-[2px]",
   },
 ];
+
 
 const FeatureCard = ({ feature }) => {
   const Icon = feature.icon;
@@ -57,21 +57,26 @@ const FeatureCard = ({ feature }) => {
     <div className="h-full">
       <div
         className={cn(
-          "relative rounded-[2.5rem] px-8 py-10 border-2 transition-all duration-300 h-full flex flex-col justify-start",
-          "bg-white dark:bg-white/5",
-          "border-[#1F3A4B]/10 dark:border-white/10 hover:border-emerald-500 dark:hover:border-[#C2F84F]",
+          "relative rounded-2xl px-6 py-8 border-2 transition-all duration-300 h-full",
+          // Theming: Matched to FAQ (Backdrop Blur + Transparency)
+          "bg-[#C2F84F]/40 dark:bg-[#476407]/40 backdrop-blur-sm",
+          "border-transparent hover:border-[#1F3A4B] dark:hover:border-[#FAFDEE]",
           feature.cornerStyle
         )}
       >
-        <div className="text-[#1F3A4B] dark:text-[#C2F84F] mb-4">
-          <Icon className="h-8 w-8 stroke-[2.5]" />
+        <div className="text-[#1F3A4B] dark:text-[#FAFDEE] mb-3 text-[2rem]">
+          <Icon className="h-10 w-10" />
         </div>
-        <h3 className="text-[#1F3A4B] dark:text-[#FAFDEE] mb-3 text-xl md:text-2xl font-black italic uppercase tracking-tighter leading-none">
+        <h2 className="text-[#1F3A4B] dark:text-[#FAFDEE] mb-2.5 text-2xl font-bold leading-tight">
           {feature.title}
-        </h3>
-        <p className="text-[#1F3A4B]/70 dark:text-[#FAFDEE]/70 text-[11px] font-bold tracking-wide leading-relaxed uppercase">
+        </h2>
+        <p className="text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 text-base font-medium leading-relaxed">
           {feature.description}
         </p>
+
+        {/* Decorative elements kept intact */}
+        <span className="from-[#1F3A4B]/0 via-[#1F3A4B]/30 to-[#1F3A4B]/0 dark:via-[#FAFDEE]/30 absolute -bottom-px left-1/2 h-px w-1/2 -translate-x-1/2 bg-gradient-to-r opacity-60"></span>
+        <span className="absolute inset-0 bg-[radial-gradient(30%_5%_at_50%_100%,rgba(31,58,75,0.1)_0%,transparent_100%)] dark:bg-[radial-gradient(30%_5%_at_50%_100%,rgba(250,253,238,0.1)_0%,transparent_100%)] opacity-60 pointer-events-none"></span>
       </div>
     </div>
   );
@@ -79,32 +84,36 @@ const FeatureCard = ({ feature }) => {
 
 export default function CongestedFeatures() {
   return (
-    <section className="relative w-full py-12 bg-transparent transition-colors duration-300 z-10" id="features">
-      <div className="mx-auto px-4 max-w-[1400px]">
-        <div className="flex flex-col-reverse gap-8 md:grid md:grid-cols-3 items-center">
+    <section className="relative w-full py-20 bg-transparent transition-colors duration-300" id="features">
+      <div className="mx-auto px-4 max-w-[1200px]">
+        {/* items-start is critical: ensures container grows as cards expand with text */}
+        <div className="flex flex-col-reverse gap-8 md:grid md:grid-cols-3 items-start">
           
-          {/* Left Feature Column */}
-          <div className="flex flex-col gap-6 w-full">
+          {/* Left column */}
+          <div className="flex flex-col gap-6">
             {leftFeatures.map((feature, index) => (
               <FeatureCard key={`left-feature-${index}`} feature={feature} />
             ))}
           </div>
 
-          {/* Sticky Center Strategic Branding Column */}
-          <div className="text-center md:sticky md:top-32 py-8 px-4 self-center">
-            <div className="bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] relative mx-auto mb-6 w-fit rounded-full px-4 py-1.5 text-[10px] font-black tracking-widest uppercase">
-              <span className="relative z-1">FEATURES</span>
+          {/* Center column */}
+          <div className="order-[1] mb-6 self-center md:sticky md:top-24 sm:order-[0] md:mb-0">
+            <div className="bg-[#C2F84F] dark:bg-[#476407] text-[#1F3A4B] dark:text-[#FAFDEE] border border-[#1F3A4B]/20 dark:border-[#FAFDEE]/20 relative mx-auto mb-6 w-fit rounded-full rounded-bl-[2px] px-4 py-2 text-sm font-bold tracking-widest uppercase ring-1 ring-[#1F3A4B]/10 dark:ring-[#FAFDEE]/10">
+              <span className="relative z-1">Features</span>
+              <span className="from-[#1F3A4B]/0 via-[#1F3A4B]/40 to-[#1F3A4B]/0 dark:via-[#FAFDEE]/40 absolute -bottom-px left-1/2 h-px w-2/5 -translate-x-1/2 bg-gradient-to-r"></span>
             </div>
-            <h2 className="text-[#1F3A4B] dark:text-[#FAFDEE] mb-4 text-3xl font-black italic uppercase tracking-tighter sm:text-4xl md:text-5xl leading-none">
-              PLATFORM <br /> CAPABILITIES
+            
+            <h2 className="text-[#1F3A4B] dark:text-[#FAFDEE] mb-4 text-center text-3xl font-extrabold sm:text-4xl md:text-[2.5rem] leading-tight">
+              Key Benefits <br className="hidden md:block" /> of Cohorts
             </h2>
-            <p className="text-[10px] font-black tracking-widest uppercase opacity-40 mx-auto max-w-[16rem]">
-              EASY AND POWERFUL TOOLS DESIGNED TO GIVE YOU A SMOOTH EXPERIANCE.
+            
+            <p className="text-[#1F3A4B]/70 dark:text-[#FAFDEE]/70 mx-auto max-w-[18rem] text-center font-bold leading-relaxed">
+              Accelerate your growth through community-driven learning cohorts.
             </p>
           </div>
 
-          {/* Right Feature Column */}
-          <div className="flex flex-col gap-6 w-full">
+          {/* Right column */}
+          <div className="flex flex-col gap-6">
             {rightFeatures.map((feature, index) => (
               <FeatureCard key={`right-feature-${index}`} feature={feature} />
             ))}

@@ -1,25 +1,30 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Mail } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Badge } from "../ui/badge";
 
+/**
+ * FAQ Item Component
+ */
 function FAQItem({ question, answer, index }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.1,
+      }}
       className={cn(
-        "relative rounded-[2rem] border-2 transition-all duration-300 overflow-hidden",
-        "bg-black/5 dark:bg-white/5", 
+        "relative rounded-2xl border-2 transition-all duration-300 overflow-hidden",
+        "bg-[#C2F84F]/40 dark:bg-[#476407]/40 backdrop-blur-sm", 
         isOpen 
-          ? "border-[#1F3A4B] dark:border-[#C2F84F] z-10 scale-[1.01]" 
-          : "border-[#1F3A4B]/10 dark:border-white/10 z-0 hover:border-[#1F3A4B]/30 dark:hover:border-[#C2F84F]/30"
+          ? "border-[#1F3A4B] dark:border-gray-500 z-10 scale-[1.01]" 
+          : "border-transparent z-0 hover:border-[#1F3A4B]/20 dark:hover:border-[#FAFDEE]/20"
       )}
     >
       <button
@@ -27,15 +32,20 @@ function FAQItem({ question, answer, index }) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
       >
-        <h3 className="text-base md:text-lg font-black uppercase tracking-tight text-[#1F3A4B] dark:text-[#FAFDEE]">
+        <h3
+          className={cn(
+            "text-base md:text-lg font-bold transition-colors duration-200",
+            "text-[#1F3A4B] dark:text-[#FAFDEE]"
+          )}
+        >
           {question}
         </h3>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className="shrink-0 text-[#1F3A4B] dark:text-[#C2F84F]"
+          transition={{ duration: 0.3, ease: "circOut" }}
+          className="shrink-0 text-[#1F3A4B] dark:text-[#FAFDEE]"
         >
-          <ChevronDown className="h-5 w-5 stroke-[3]" />
+          <ChevronDown className="h-6 w-6" />
         </motion.div>
       </button>
 
@@ -46,18 +56,22 @@ function FAQItem({ question, answer, index }) {
             animate={{ 
               height: "auto", 
               opacity: 1,
-              transition: { height: { duration: 0.3 }, opacity: { duration: 0.2 } } 
+              transition: { height: { duration: 0.4 }, opacity: { duration: 0.25, delay: 0.1 } } 
             }}
             exit={{ 
               height: 0, 
               opacity: 0,
-              transition: { height: { duration: 0.25 }, opacity: { duration: 0.15 } } 
+              transition: { height: { duration: 0.3 }, opacity: { duration: 0.2 } } 
             }}
           >
-            <div className="px-6 pb-6 pt-0 border-t-2 border-[#1F3A4B]/10 dark:border-white/10 mt-2">
-              <p className="text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 text-xs md:text-sm font-bold leading-relaxed pt-4 tracking-wide">
+            <div className="px-6 pb-6 pt-0 border-t border-[#1F3A4B]/10 dark:border-[#FAFDEE]/10 mt-2">
+              <motion.p 
+                initial={{ y: -10 }}
+                animate={{ y: 0 }}
+                className="text-[#1F3A4B]/80 dark:text-[#FAFDEE]/80 text-sm md:text-base font-medium leading-relaxed pt-4"
+              >
                 {answer}
-              </p>
+              </motion.p>
             </div>
           </motion.div>
         )}
@@ -66,45 +80,60 @@ function FAQItem({ question, answer, index }) {
   );
 }
 
+/**
+ * Main CongestedFAQ Component
+ */
 export default function CongestedFAQ() {
-  const faqs = [
-    {
-      question: "What makes this healthcare platform unique?",
-      answer: "OUR PLATFORM CONNECTS PATIENTS AND DOCTORS WITH REAL-TIME APPOINTMENTS, SECURE CHAT, AI HELP, AND EASY-TO-USE DASHBOARDS FOR BOTH SIDES.",
-    },
-    {
-      question: "How does the appointment system work?",
-      answer: "PATIENTS CAN BOOK AVAILABLE TIME SLOTS, AND DOCTORS CAN ACCEPT, DECLINE, OR RESCHEDULE REQUESTS. BOTH SIDES GET INSTANT UPDATES WITH A LIVE CALENDAR VIEW.",
-    },
-    {
-      question: "Is the chat with doctors secure?",
-      answer: "YES, ALL COMMUNICATION IS PROTECTED WITH SECURE ACCOUNTS AND LOCKED LOGIN SESSIONS, KEEPING DOCTOR-PATIENT CONVERSATIONS PRIVATE AND RELIABLE.",
-    },
-    {
-      question: "Can I access the platform from mobile?",
-      answer: "ABSOLUTELY! THE ENTIRE INTERFACE IS MOBILE-FRIENDLY, INCLUDING DASHBOARDS, CHAT, APPOINTMENTS, AND THE AI ASSISTANT, ENSURING A SMOOTH EXPERIENCE ANYWHERE.",
-    },
-  ];
+const faqs = [
+  {
+    question: "What makes this healthcare platform unique?",
+    answer:
+      "Our platform bridges patients and doctors with real-time appointments, secure chat, AI assistance, and a responsive dashboard for both roles",
+  },
+  {
+    question: "How does the appointment system work?",
+    answer:
+      "Patients can book available time slots, and doctors can accept, reject, or reschedule requests. Both sides get instant updates with a live calendar view.",
+  },
+  {
+    question: "Is the chat with doctors secure?",
+    answer:
+      "Yes, all communication is protected with role-based authentication and JWT-secured sessions, ensuring private and reliable doctor–patient conversations.",
+  },
+  {
+    question: "Can I access the platform from mobile?",
+    answer:
+      "Absolutely! The entire interface is mobile-friendly, including dashboards, chat, appointments, and the AI assistant, ensuring a smooth experience anywhere.",
+  },
+];
+
 
   return (
-    <div className="w-full h-auto block relative px-4 bg-transparent transition-all duration-300 z-10">
-      <div className="max-w-4xl mx-auto">
+    /* Changed bg to transparent but removed the forced negative margin that breaks flow */
+    /* Added h-auto and block display to ensure the component calculates expansion correctly */
+    <div className="w-full h-auto block relative px-4 bg-transparent transition-all duration-300">
+      <div className="max-w-4xl mx-auto mt-[-3.8rem]">
         
-        {/* Header Block */}
+        {/* Header Section */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12 space-y-4"
+          className="text-center mb-16 space-y-4"
         >
-          <Badge className="px-4 py-1.5 rounded-full border-2 text-[10px] font-black uppercase tracking-widest bg-[#1F3A4B] dark:bg-[#C2F84F] border-transparent text-white dark:text-[#1F3A4B]">
+          <Badge
+            className={cn(
+              "px-4 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest",
+              "bg-[#C2F84F] dark:bg-[#476407] border-[#1F3A4B] dark:border-[#FAFDEE] text-[#1F3A4B] dark:text-[#FAFDEE]"
+            )}
+          >
             FAQ
           </Badge>
-          <h2 className="text-4xl font-black italic tracking-tighter uppercase sm:text-5xl text-[#1F3A4B] dark:text-[#FAFDEE]">
+          <h2 className="text-4xl font-bold tracking-tight sm:text-5xl text-[#1F3A4B] dark:text-[#FAFDEE]">
             Common Questions
           </h2>
-          <p className="text-xs font-black tracking-widest uppercase opacity-40 max-w-xl mx-auto">
-            EVERYTHING YOU NEED TO KNOW ABOUT HOW OUR PORTAL AND PLATFORM PLANS WORK.
+          <p className="text-lg text-[#1F3A4B]/70 dark:text-[#FAFDEE]/70 max-w-xl mx-auto font-medium">
+            Everything you need to know about our tools and pricing plans.
           </p>
         </motion.div>
 
@@ -115,28 +144,34 @@ export default function CongestedFAQ() {
           ))}
         </div>
 
-        {/* Support Section Footer */}
+        {/* Support Section Footer - Pushed dynamically down by expanding boxes */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="mt-16 p-8 md:p-12 rounded-[2.5rem] md:rounded-[4rem] text-center border-2 bg-black/5 dark:bg-white/5 border-[#1F3A4B]/10 dark:border-white/10"
+          transition={{ delay: 0.2 }}
+          className={cn(
+            "mt-20 p-8 rounded-3xl text-center border-2",
+            "bg-[#C2F84F]/40 dark:bg-[#476407]/40 border-[#1F3A4B]/20 dark:border-gray-500 shadow-sm backdrop-blur-sm"
+          )}
         >
-          <div className="bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] inline-flex p-4 rounded-2xl mb-4 shadow-md">
+          <div className="bg-[#1F3A4B] dark:bg-[#FAFDEE] text-[#FAFDEE] dark:text-[#1F3A4B] inline-flex p-3 rounded-full mb-4">
             <Mail className="w-6 h-6" />
           </div>
-          <h4 className="text-[#1F3A4B] dark:text-[#FAFDEE] text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-2">
+          <h4 className="text-[#1F3A4B] dark:text-[#FAFDEE] text-2xl font-bold mb-2">
             Still have questions?
           </h4>
-          <p className="text-[10px] font-black tracking-widest uppercase opacity-40 mb-8">
-            CAN'T FIND WHAT YOU'RE LOOKING FOR? REACH OUT TO OUR SUPPORT TEAM.
+          <p className="text-[#1F3A4B]/70 dark:text-[#FAFDEE]/70 font-medium mb-8">
+            Can't find what you're looking for? Reach out to our team.
           </p>
-          <Link 
-            to="/contact"
-            className="inline-block px-8 py-4 rounded-xl font-black text-xs uppercase tracking-widest bg-[#1F3A4B] dark:bg-[#C2F84F] text-white dark:text-[#1F3A4B] hover:scale-105 active:scale-95 transition-all shadow-md"
+          <button
+            className={cn(
+              "px-8 py-4 rounded-xl font-bold text-lg tracking-tight transition-all duration-300",
+              "bg-[#1F3A4B] dark:bg-[#FAFDEE] text-[#FAFDEE] dark:text-[#1F3A4B] hover:opacity-90 active:scale-95"
+            )}
           >
             Contact Support
-          </Link>
+          </button>
         </motion.div>
       </div>
     </div>

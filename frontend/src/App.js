@@ -16,7 +16,6 @@ import CommuntiySupport from './components/CommuntiySupport';
 import RoleProtectedRoute from './components/RoleProtectedRoute';
 import ContactUs1 from './components/mvpblocks/contact-us-1';
 import CongestedPricing from './components/mvpblocks/congusted-pricing';
-import AboutUs from './components/AboutUs';
 function App() {
   return (
     <ThemeProvider>
@@ -27,17 +26,23 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/contact" element={<ContactUs1 />} />
         <Route path="/pricing" element={<CongestedPricing />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/login" element={
+        <Route
+          path="/login"
+          element={
             <PublicRoute>
               <Login />
             </PublicRoute>
-          }/>
-        <Route path="/signup"element={
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
             <PublicRoute>
               <Signup />
             </PublicRoute>
-          }/>
+          }
+        />
         <Route path="/patient" element={
           <RoleProtectedRoute allowedRole="patient">
             <PatientPage />
@@ -47,6 +52,7 @@ function App() {
             <RoleProtectedRoute allowedRole="doctor">
                <DoctorPage />
             </RoleProtectedRoute>
+           
         } />
         <Route path="/book-appointment" element={
           <PrivateRoute>
