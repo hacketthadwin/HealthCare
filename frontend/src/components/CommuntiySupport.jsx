@@ -12,7 +12,9 @@ import {
   ArrowLeft
 } from 'lucide-react';
 
-const API_BASE = 'https://healthcare-97r0.onrender.com/api/v1';
+import { API_URL } from "../config/api";
+
+const API_BASE = `${API_URL}/api/v1`;
 
 const token = localStorage.getItem('userToken');
 if (token) {

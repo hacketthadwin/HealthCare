@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import axios from 'axios';
 import { Activity, ShieldCheck, Zap } from 'lucide-react';
+import { API_URL } from "../../config/api";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -40,7 +41,7 @@ function DailyTaskCompletionChart() {
   const fetchTaskData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("https://healthcare-97r0.onrender.com/api/v1/get-7days-tasks");
+      const res = await axios.get(`${API_URL}/api/v1/get-7days-tasks`);
       if (!res.data.success) throw new Error(res.data.message);
 
       const rawTasks = res.data.data;

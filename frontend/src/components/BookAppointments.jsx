@@ -11,6 +11,9 @@ import {
   ArrowLeft
 } from 'lucide-react';
 
+import { API_URL } from "../config/api";
+
+
 const BookAppointments = () => {
   const navigate = useNavigate();
   const [doctorsList, setDoctorsList] = useState([]);
@@ -24,7 +27,7 @@ const BookAppointments = () => {
       if (!token) throw new Error('Authentication required.');
 
       const response = await axios.get(
-        'https://healthcare-97r0.onrender.com/api/v1/book-appointment/users?role=Doctor',
+        `${API_URL}/api/v1/book-appointment/users?role=Doctor`,
         {
           headers: { Authorization: `Bearer ${token}` },
           timeout: 5000,
@@ -66,7 +69,7 @@ const BookAppointments = () => {
 
     try {
       await axios.post(
-        'https://healthcare-97r0.onrender.com/api/v1/appointments/book',
+        `${API_URL}/api/v1/appointments/book`,
         { doctorId: doctor._id, reason },
         {
           headers: {

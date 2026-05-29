@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { Home, ArrowRight } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
+import { API_URL } from "../config/api";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const Signup = () => {
     }
 
     setLoading(true);
-    axios.post("https://healthcare-97r0.onrender.com/api/v1/signup", {
+    axios.post(`${API_URL}/api/v1/signup`, {
       email: formData.email,
       password: formData.password,
       name: formData.username,

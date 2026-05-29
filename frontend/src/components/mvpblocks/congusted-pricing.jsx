@@ -7,7 +7,8 @@ import { Check, Star } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTheme } from '../../context/ThemeContext';
 import Header1 from '../UIcomponents/Header1';
-
+import axios from "axios";
+import { API_URL } from "../../config/api";
 const NumberFlow = ({ value, format, transformTiming, className }) => {
   const formattedValue = new Intl.NumberFormat('en-IN', format).format(value);
   return (
@@ -79,27 +80,6 @@ const plans = [
     href: "/signup",
     isPopular: true,
     cornerStyle: "sm:-translate-x-2 sm:rounded-br-[2px]",
-  },
-  {
-    name: "Hospital Pro Plan",
-    price: "7999",
-    yearlyPrice: "6399",
-    period: "month",
-    features: [
-      "Register unlimited doctors under one hospital",
-      "Hospital verification badge",
-      "Custom dashboard for staff and specialists",
-      "Advanced reporting and analytics",
-      "Priority support for onboarding doctors",
-      "Dedicated account manager",
-      "API access for hospital systems",
-      "Bulk doctor profile management",
-    ],
-    description: "Designed for clinics and hospitals wanting a unified management system.",
-    buttonText: "Register Hospital",
-    href: "/contact",
-    isPopular: false,
-    cornerStyle: "sm:translate-x-2 sm:rounded-tr-[2px]",
   },
 ];
 
@@ -194,6 +174,92 @@ export default function CongestedPricing() {
     }
   };
 
+const handlePayment = async (plan) => {
+  try {
+    const token =
+      localStorage.getItem("userToken");
+    if (!token) {
+      alert("Please login first");
+      return;
+    }
+    const amount =
+      Number(
+        isMonthly
+          ? plan.price
+          : plan.yearlyPrice
+      );
+    const { data } =
+      await axios.post(
+        `${API_URL}/api/v1/payment/create-order`,
+        {
+          amount
+        },
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+    const options = {
+      key:
+        process.env.REACT_APP_RAZORPAY_KEY_ID,
+      amount:
+        data.amount,
+      currency:
+        data.currency,
+      name:
+        "HealthHub",
+      description:
+        plan.name,
+      order_id:
+        data.id,
+      handler:
+        async function (response) {
+          try {
+            await axios.post(
+              `${API_URL}/api/v1/payment/verify-payment`,
+              {
+                ...response,
+                amount,
+                role:
+                  plan.name.includes("Doctor")
+                    ? "Doctor"
+                    : "Patient"
+              },
+              {
+                headers: {
+                  Authorization:
+                    `Bearer ${token}`
+                }
+              }
+            );
+            alert(
+              "Payment Successful"
+            );
+          }
+          catch (error) {
+            console.error(error);
+            alert(
+              "Payment Verification Failed"
+            );
+          }
+        }
+    };
+    const razorpay =
+      new window.Razorpay(
+        options
+      );
+    razorpay.open();
+  }
+  catch (error) {
+    console.error(error);
+    alert(
+      "Payment Failed"
+    );
+  }
+};
+
   return (
     <div 
       className="w-full min-h-screen transition-colors duration-300 font-sans overflow-x-hidden relative select-none pt-44 pb-20 px-6"
@@ -264,7 +330,7 @@ export default function CongestedPricing() {
             </div>
 
             {/* Cards Matrix Grid */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 w-full max-w-6xl mx-auto items-stretch">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 w-full max-w-6xl mx-auto items-stretch">
               {plans.map((plan, index) => (
                 <MotionDiv
                   key={index}
@@ -354,17 +420,19 @@ export default function CongestedPricing() {
                   <div className="mt-8">
                     <hr className="my-6 w-full border-[#1F3A4B]/10 dark:border-white/10" />
 
-                    <a
-                      href={plan.href}
-                      className={cn(
-                        "block w-full px-4 py-3.5 rounded-xl font-bold text-center text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
-                        plan.isPopular
-                          ? "bg-[#C2F84F] text-black shadow-md shadow-[#C2F84F]/10"
-                          : "bg-[#1F3A4B] dark:bg-white text-white dark:text-black shadow-sm"
-                      )}
-                    >
-                      {plan.buttonText}
-                    </a>
+                  <button
+                    onClick={() =>
+                      handlePayment(plan)
+                    }
+                    className={cn(
+                      "block w-full px-4 py-3.5 rounded-xl font-bold text-center text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
+                      plan.isPopular
+                        ? "bg-[#C2F84F] text-black shadow-md shadow-[#C2F84F]/10"
+                        : "bg-[#1F3A4B] dark:bg-white text-white dark:text-black shadow-sm"
+                    )}
+                  >
+                    {plan.buttonText}
+                  </button>
                     
                     <p className="mt-4 text-sm font-medium opacity-70 leading-relaxed text-[#1F3A4B] dark:text-[#FAFDEE]">
                       {plan.description}

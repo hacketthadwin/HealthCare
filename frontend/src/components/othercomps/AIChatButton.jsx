@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AIResponseContext } from '../../context/AIResponseContext';
 import { MessageSquare, X, Plus, Minus, Send, Sparkles } from 'lucide-react';
-
-const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+import axios from "axios";
+import { API_URL } from "../../config/api";
 
 function AIChatButton() {
     const [isOpen, setIsOpen] = useState(false);
@@ -96,11 +95,9 @@ function AIChatButton() {
             return;
         }
 
-        try {
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const chat = model.startChat({ history: [], generationConfig: { temperature: 0.7 } });
+try {
 
-            const fullPrompt = `
+    const fullPrompt = `
 You are a medical assistant chatbot for a healthcare website.
 
 You must:
@@ -131,31 +128,79 @@ If the question is unrelated to health, reply only with:
 
 User: ${currentInput}
 `;
+    const token = localStorage.getItem("userToken");
 
-            const result = await chat.sendMessage(fullPrompt);
-            const response = await result.response;
-            const aiResponse = await response.text();
+    const response = await axios.post( `${API_URL}/api/v1/ai/chat`, { prompt: fullPrompt}, { headers: { Authorization: `Bearer ${token}`}});
 
-            setMessages(prev => [...prev, { text: aiResponse, sender: 'ai' }]);
+    const aiResponse =
+    response.data.reply;
 
-            // Task Parsing Logic (Untouched original logic)
-            const doTheseMatch = aiResponse.match(/<h4>Do these things:<\/h4>\s*(<ul>[\s\S]*?<\/ul>)/);
-            if (doTheseMatch && doTheseMatch[1]) {
-                const html = doTheseMatch[1].trim();
-                setLastAIMessage(html);
-
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const listItems = Array.from(doc.querySelectorAll('li')).map(li => li.textContent.trim());
-                setAiTasks(listItems);
-            } else {
-                setLastAIMessage("");
-                setAiTasks([]);
-            }
-        } catch (err) {
-            console.error("AI error:", err);
-            setMessages(prev => [...prev, { text: "System connection error. Please try again.", sender: 'ai' }]);
+    setMessages(prev => [
+        ...prev,
+        {
+            text: aiResponse,
+            sender: "ai"
         }
+    ]);
+
+    const doTheseMatch =
+        aiResponse.match(
+            /<h4>Do these things:<\/h4>\s*(<ul>[\s\S]*?<\/ul>)/
+        );
+
+    if (doTheseMatch && doTheseMatch[1]) {
+
+        const html =
+            doTheseMatch[1].trim();
+
+        setLastAIMessage(html);
+
+        const parser =
+            new DOMParser();
+
+        const doc =
+            parser.parseFromString(
+                html,
+                "text/html"
+            );
+
+        const listItems =
+            Array.from(
+                doc.querySelectorAll("li")
+            ).map(
+                li => li.textContent.trim()
+            );
+
+        setAiTasks(listItems);
+
+    }
+    else {
+
+        setLastAIMessage("");
+
+        setAiTasks([]);
+
+    }
+
+}
+catch(err){
+
+    console.error(
+        "AI error:",
+        err
+    );
+
+    setMessages(prev => [
+        ...prev,
+        {
+            text:
+            "System connection error. Please try again.",
+            sender:
+            "ai"
+        }
+    ]);
+
+}
     };
 
     return (

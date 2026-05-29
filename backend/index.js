@@ -83,8 +83,13 @@ io.on('connection', (socket) => {
 
 // Routes
 const user = require("./routes/user");
+const paymentRoutes = require("./routes/paymentRoutes");
+const aiRoutes = require("./routes/aiRoutes");
+
 app.use("/api/v1", user);
 app.use("/api/v1/appointments", require("./routes/appointmentRoutes"));
+app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/ai",aiRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');

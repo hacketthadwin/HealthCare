@@ -10,6 +10,7 @@ import {
   Activity,
   ArrowRight
 } from 'lucide-react';
+import { API_URL } from "../../config/api";
 
 const formatDateTime = (isoString) => {
   const date = new Date(isoString);
@@ -44,7 +45,7 @@ function CurrentAppointments() {
       setError(null);
 
       const response = await axios.get(
-        'https://healthcare-97r0.onrender.com/api/v1/appointments/patient-doctors',
+        `${API_URL}/api/v1/appointments/patient-doctors`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

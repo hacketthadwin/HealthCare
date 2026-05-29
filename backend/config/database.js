@@ -9,7 +9,7 @@ exports.connect = () => {
         process.exit(1);
     }
 
-    console.log("🔌 Trying to connect to:", dbURL); // Add this temporarily
+    // console.log("Trying to connect to:", dbURL); // debug
 
     mongoose.connect(dbURL)
         .then(() => {

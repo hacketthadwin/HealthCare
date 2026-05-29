@@ -21,8 +21,9 @@ import {
   Heart
 } from 'lucide-react';
 import Header1 from './UIcomponents/Header1';
+import { API_URL } from "../config/api";
 
-const socket = io('https://healthcare-97r0.onrender.com');
+const socket = io(`${API_URL}`);
 
 const DoctorPage = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const DoctorPage = () => {
       setUserId(decoded.id);
     } catch { localStorage.clear(); navigate("/login"); return; }
     try {
-      const res = await axios.get("https://healthcare-97r0.onrender.com/api/v1/appointments/doctorappointment", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_URL}/api/v1/book-appointment/users?role=Doctor`, { headers: { Authorization: `Bearer ${token}` } });
       const allAppointments = res.data.data;
       const pending = allAppointments.filter(app => app.status === 'pending');
       const accepted = allAppointments.filter(app => app.status === 'accepted' || app.status === 'completed');
@@ -110,7 +111,7 @@ const DoctorPage = () => {
     const token = localStorage.getItem("userToken");
     try {
       const newStatus = action === "accept" ? "accepted" : "rejected";
-      await axios.patch(`https://healthcare-97r0.onrender.com/api/v1/appointments/${appointmentId}`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.patch(`${API_URL}/api/v1/appointments/${appointmentId}`, { status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
       toast.success(`Appointment ${action}ed successfully!`);
       fetchAppointments();
     } catch (err) { toast.error(`Failed to ${action} appointment.`); }

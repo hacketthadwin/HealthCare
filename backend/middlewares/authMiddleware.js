@@ -4,7 +4,6 @@ require("dotenv").config();
 
 exports.auth = (req, res, next) => {  //this issue came when i tried to access token in community section to ask problems so i have to change the method to extract token
     try {
-        // --- START OF FIX ---
 
         // Extract token from Authorization header
         const authHeader = req.headers.authorization;
@@ -20,7 +19,6 @@ exports.auth = (req, res, next) => {  //this issue came when i tried to access t
         // Get the token part (remove "Bearer ")
         const token = authHeader.split(' ')[1];
         
-        // --- END OF FIX ---
 
         // Verify the token
         try {

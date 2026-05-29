@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { Eye, EyeOff, Home, ArrowRight } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
+import { API_URL } from "../config/api";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +19,7 @@ const Login = () => {
     setLoading(true);
 
     axios
-      .post("https://healthcare-97r0.onrender.com/api/v1/login", {
+      .post(`${API_URL}/api/v1/login`, {
         email,
         password,
       })
