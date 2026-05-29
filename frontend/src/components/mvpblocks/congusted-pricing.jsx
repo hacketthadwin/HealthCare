@@ -216,9 +216,6 @@ const handlePayment = async (plan) => {
         data.id,
       handler:
         async function (response) {
-          console.log(
-          localStorage.getItem("userToken")
-          );
           try {
             await axios.post(
               `${API_URL}/api/v1/payment/verify-payment`,
@@ -255,21 +252,12 @@ const handlePayment = async (plan) => {
       );
     razorpay.open();
   }
-catch(error){
-    console.error(
-        "PAYMENT ERROR:",
-        error
-    );
-    console.log(
-        error?.response?.data
-    );
+  catch (error) {
+    console.error(error);
     alert(
-        JSON.stringify(
-            error?.response?.data ||
-            error.message
-        )
+      "Payment Failed"
     );
-}
+  }
 };
 
   return (
